@@ -1,0 +1,574 @@
+[
+  {
+    "root": "بِسْمِ",
+    "meaning": "Im Namen von"
+  },
+  {
+    "root": "اللَّه",
+    "meaning": "Allah (Gott)"
+  },
+  {
+    "root": "الرَّحْمَن",
+    "meaning": "Der Allerbarmer"
+  },
+  {
+    "root": "الرَّحِيم",
+    "meaning": "Der Barmherzige"
+  },
+  {
+    "root": "رَبّ",
+    "meaning": "Herr / Erhalter"
+  },
+  {
+    "root": "عَالَمِين",
+    "meaning": "Die Welten / Die Schöpfung"
+  },
+  {
+    "root": "يَوْم",
+    "meaning": "Tag"
+  },
+  {
+    "root": "دِين",
+    "meaning": "Religion / Gericht"
+  },
+  {
+    "root": "إِيَّاك",
+    "meaning": "Nur Dir allein"
+  },
+  {
+    "root": "نَعْبُد",
+    "meaning": "Wir verehren"
+  },
+  {
+    "root": "نَسْتَعِين",
+    "meaning": "Wir erbitten Hilfe"
+  },
+  {
+    "root": "اهْدِنَا",
+    "meaning": "Leite uns"
+  },
+  {
+    "root": "صِرَاط",
+    "meaning": "Pfad / Weg"
+  },
+  {
+    "root": "مُسْتَقِيم",
+    "meaning": "Gerade / Aufrecht"
+  },
+  {
+    "root": "أَنْعَمْت",
+    "meaning": "Diejenigen, denen Du Gunst erwiesen"
+  },
+  {
+    "root": "مَغْضُوب",
+    "meaning": "Diejenigen, auf denen Zorn lastet"
+  },
+  {
+    "root": "ضَالِّين",
+    "meaning": "Die Irregehenden"
+  },
+  {
+    "root": "نُور",
+    "meaning": "Licht"
+  },
+  {
+    "root": "حَمْد",
+    "meaning": "Lob / Dank"
+  },
+  {
+    "root": "مَلِك",
+    "meaning": "König / Herrscher"
+  },
+  {
+    "root": "قُلْ",
+    "meaning": "Sprich!"
+  },
+  {
+    "root": "هُوَ",
+    "meaning": "Er / Ihm"
+  },
+  {
+    "root": "أَحَد",
+    "meaning": "Einer / Einzigartiger"
+  },
+  {
+    "root": "صَمَد",
+    "meaning": "Der Ewige / Der Absolute"
+  },
+  {
+    "root": "يَلِد",
+    "meaning": "Er zeugt nicht"
+  },
+  {
+    "root": "يُولَد",
+    "meaning": "Noch wurde Er gezeugt"
+  },
+  {
+    "root": "كُفُوًا",
+    "meaning": "Gleich / Vergleichbar"
+  },
+  {
+    "root": "فَلَق",
+    "meaning": "Morgengrauen / Tagesanbruch"
+  },
+  {
+    "root": "وَسْوَاس",
+    "meaning": "Böse Einflüsterung"
+  },
+  {
+    "root": "نَاس",
+    "meaning": "Die Menschen / Die Menschheit"
+  },
+  {
+    "root": "إِيمَان",
+    "meaning": "Glaube / Überzeugung"
+  },
+  {
+    "root": "إِسْلَام",
+    "meaning": "Hingabe an Gott / Islam"
+  },
+  {
+    "root": "إِحْسَان",
+    "meaning": "Spirituelle Exzellenz"
+  },
+  {
+    "root": "تَوْحِيد",
+    "meaning": "Monotheismus / Einheit Gottes"
+  },
+  {
+    "root": "شِرْك",
+    "meaning": "Polytheismus / Götzendienst"
+  },
+  {
+    "root": "كُفْر",
+    "meaning": "Unglaube / Undankbarkeit"
+  },
+  {
+    "root": "نِفَاق",
+    "meaning": "Heuchelei"
+  },
+  {
+    "root": "فُسُوق",
+    "meaning": "Unmoral / Frevelhaftigkeit"
+  },
+  {
+    "root": "عِصْيَان",
+    "meaning": "Ungehorsam"
+  },
+  {
+    "root": "تَقْوَى",
+    "meaning": "Gottesfurcht / Frömmigkeit"
+  },
+  {
+    "root": "وَرَع",
+    "meaning": "Fromme Vorsicht"
+  },
+  {
+    "root": "زُهْد",
+    "meaning": "Askese / Weltentsagung"
+  },
+  {
+    "root": "رَحْمَة",
+    "meaning": "Barmherzigkeit / Mitgefühl"
+  },
+  {
+    "root": "صَبْر",
+    "meaning": "Geduld / Ausdauer"
+  },
+  {
+    "root": "شُكْر",
+    "meaning": "Dankbarkeit / Anerkennung"
+  },
+  {
+    "root": "تَوْبَة",
+    "meaning": "Reue / Umkehr zu Gott"
+  },
+  {
+    "root": "عَدْل",
+    "meaning": "Gerechtigkeit / Fairness"
+  },
+  {
+    "root": "إِنصَاف",
+    "meaning": "Unparteilichkeit"
+  },
+  {
+    "root": "أَمَانَة",
+    "meaning": "Vertrauen / Ehrlichkeit"
+  },
+  {
+    "root": "صِدْق",
+    "meaning": "Aufrichtigkeit / Wahrhaftigkeit"
+  },
+  {
+    "root": "وَفَاء",
+    "meaning": "Treue / Loyalität"
+  },
+  {
+    "root": "حَيَاء",
+    "meaning": "Bescheidenheit / Scham"
+  },
+  {
+    "root": "كَرَم",
+    "meaning": "Großzügigkeit / Edelmut"
+  },
+  {
+    "root": "عَفْو",
+    "meaning": "Vergebung / Milde"
+  },
+  {
+    "root": "حِلْم",
+    "meaning": "Sanftmut / Nachsicht"
+  },
+  {
+    "root": "تَوَاضُع",
+    "meaning": "Demut"
+  },
+  {
+    "root": "إِخْلَاص",
+    "meaning": "Aufrichtigkeit / Reine Hingabe"
+  },
+  {
+    "root": "صَلَاة",
+    "meaning": "Ritualgebet"
+  },
+  {
+    "root": "زَكَاة",
+    "meaning": "Pflichtalmosen"
+  },
+  {
+    "root": "صِيَام",
+    "meaning": "Fasten"
+  },
+  {
+    "root": "حَجّ",
+    "meaning": "Pilgerfahrt nach Mekka"
+  },
+  {
+    "root": "عُمْرَة",
+    "meaning": "Kleine Pilgerfahrt"
+  },
+  {
+    "root": "طَهَارَة",
+    "meaning": "Rituelle Reinheit"
+  },
+  {
+    "root": "وُضُوء",
+    "meaning": "Kleine Waschung"
+  },
+  {
+    "root": "غُسْل",
+    "meaning": "Große Waschung"
+  },
+  {
+    "root": "تَيَمُّم",
+    "meaning": "Reinigung mit Erde"
+  },
+  {
+    "root": "قِبْلَة",
+    "meaning": "Gebetsrichtung nach Mekka"
+  },
+  {
+    "root": "أَذَان",
+    "meaning": "Gebetsruf"
+  },
+  {
+    "root": "إِقَامَة",
+    "meaning": "Zweiter Gebetsruf"
+  },
+  {
+    "root": "رَكْعَة",
+    "meaning": "Gebetseinheit"
+  },
+  {
+    "root": "سُجُود",
+    "meaning": "Niederwerfung"
+  },
+  {
+    "root": "رُكُوع",
+    "meaning": "Verbeugung"
+  },
+  {
+    "root": "قِيَام",
+    "meaning": "Stehende Haltung (im Gebet)"
+  },
+  {
+    "root": "تَشَهُّد",
+    "meaning": "Glaubensbezeugung"
+  },
+  {
+    "root": "سَلَام",
+    "meaning": "Friede / Schlussgruß"
+  },
+  {
+    "root": "جَنَّة",
+    "meaning": "Paradies / Garten"
+  },
+  {
+    "root": "نَار",
+    "meaning": "Feuer / Hölle"
+  },
+  {
+    "root": "آخِرَة",
+    "meaning": "Das Jenseits"
+  },
+  {
+    "root": "دُنْيَا",
+    "meaning": "Diese Welt / Das Diesseits"
+  },
+  {
+    "root": "بَعْث",
+    "meaning": "Auferstehung"
+  },
+  {
+    "root": "قِيَامَة",
+    "meaning": "Tag der Auferstehung"
+  },
+  {
+    "root": "حِسَاب",
+    "meaning": "Gericht / Rechenschaft"
+  },
+  {
+    "root": "مِيزَان",
+    "meaning": "Waage der Taten"
+  },
+  {
+    "root": "صِرَاط",
+    "meaning": "Brücke über die Hölle"
+  },
+  {
+    "root": "شَفَاعَة",
+    "meaning": "Fürsprache"
+  },
+  {
+    "root": "كَوْثَر",
+    "meaning": "Fluss im Paradies"
+  },
+  {
+    "root": "حُور",
+    "meaning": "Paradiesgefährtinnen"
+  },
+  {
+    "root": "فِرْدَوْس",
+    "meaning": "Das höchste Paradies"
+  },
+  {
+    "root": "جَهَنَّم",
+    "meaning": "Gehenna / Hölle"
+  },
+  {
+    "root": "مَلَك",
+    "meaning": "Engel"
+  },
+  {
+    "root": "نَبِيّ",
+    "meaning": "Prophet"
+  },
+  {
+    "root": "رَسُول",
+    "meaning": "Gesandter / Bote"
+  },
+  {
+    "root": "صِدِّيق",
+    "meaning": "Der sehr Wahrhaftige"
+  },
+  {
+    "root": "شَهِيد",
+    "meaning": "Märtyrer / Zeuge"
+  },
+  {
+    "root": "وَلِيّ",
+    "meaning": "Heiliger / Gottesfreund"
+  },
+  {
+    "root": "إِمَام",
+    "meaning": "Imam / Vorbeter"
+  },
+  {
+    "root": "عَالِم",
+    "meaning": "Islamischer Gelehrter"
+  },
+  {
+    "root": "جِبْرِيل",
+    "meaning": "Gabriel (Offenbarungsengel)"
+  },
+  {
+    "root": "مِيكَائِيل",
+    "meaning": "Michael (Engel)"
+  },
+  {
+    "root": "إِسْرَافِيل",
+    "meaning": "Israfil (Engel des Gerichts)"
+  },
+  {
+    "root": "إِبْلِيس",
+    "meaning": "Iblis / Satan"
+  },
+  {
+    "root": "شَيْطَان",
+    "meaning": "Dämon / Teufel"
+  },
+  {
+    "root": "جِنّ",
+    "meaning": "Dschinn (unsichtbares Wesen)"
+  },
+  {
+    "root": "قُرْآن",
+    "meaning": "Der Koran"
+  },
+  {
+    "root": "سُورَة",
+    "meaning": "Korankapitel"
+  },
+  {
+    "root": "آيَة",
+    "meaning": "Vers / Zeichen"
+  },
+  {
+    "root": "حَدِيث",
+    "meaning": "Prophetenausspruch"
+  },
+  {
+    "root": "سُنَّة",
+    "meaning": "Prophetische Tradition"
+  },
+  {
+    "root": "تَفْسِير",
+    "meaning": "Koranexegese"
+  },
+  {
+    "root": "تَجْوِيد",
+    "meaning": "Korrekte Koranrezitation"
+  },
+  {
+    "root": "حِفْظ",
+    "meaning": "Auswendiglernen"
+  },
+  {
+    "root": "تِلَاوَة",
+    "meaning": "Koranrezitation"
+  },
+  {
+    "root": "الغَفُور",
+    "meaning": "Der Allvergebende"
+  },
+  {
+    "root": "القَدِير",
+    "meaning": "Der Allmächtige"
+  },
+  {
+    "root": "العَلِيم",
+    "meaning": "Der Allwissende"
+  },
+  {
+    "root": "السَّمِيع",
+    "meaning": "Der Allhörende"
+  },
+  {
+    "root": "البَصِير",
+    "meaning": "Der Allsehende"
+  },
+  {
+    "root": "الحَكِيم",
+    "meaning": "Der Allweise"
+  },
+  {
+    "root": "الخَالِق",
+    "meaning": "Der Schöpfer"
+  },
+  {
+    "root": "الرَّزَّاق",
+    "meaning": "Der Allversorger"
+  },
+  {
+    "root": "التَّوَّاب",
+    "meaning": "Der Reueannehmer"
+  },
+  {
+    "root": "الوَدُود",
+    "meaning": "Der Liebevolle"
+  },
+  {
+    "root": "الصَّبُور",
+    "meaning": "Der Geduldige"
+  },
+  {
+    "root": "النُّور",
+    "meaning": "Das Licht (göttlicher Name)"
+  },
+  {
+    "root": "الحَيّ",
+    "meaning": "Der Lebendige"
+  },
+  {
+    "root": "القَيُّوم",
+    "meaning": "Der sich selbst Erhaltende"
+  },
+  {
+    "root": "الأَوَّل",
+    "meaning": "Der Erste"
+  },
+  {
+    "root": "الآخِر",
+    "meaning": "Der Letzte"
+  },
+  {
+    "root": "الظَّاهِر",
+    "meaning": "Der Offenbare"
+  },
+  {
+    "root": "البَاطِن",
+    "meaning": "Der Verborgene"
+  },
+  {
+    "root": "أُمَّة",
+    "meaning": "Gemeinschaft / Volk"
+  },
+  {
+    "root": "عِلْم",
+    "meaning": "Wissen / Wissenschaft"
+  },
+  {
+    "root": "حَقّ",
+    "meaning": "Wahrheit / Recht"
+  },
+  {
+    "root": "خَيْر",
+    "meaning": "Gut / Güte"
+  },
+  {
+    "root": "شَرّ",
+    "meaning": "Böse / Übel"
+  },
+  {
+    "root": "فِتْنَة",
+    "meaning": "Prüfung / Zwietracht"
+  },
+  {
+    "root": "بَلَاء",
+    "meaning": "Prüfung / Unglück"
+  },
+  {
+    "root": "نِعْمَة",
+    "meaning": "Segen / Gnade"
+  },
+  {
+    "root": "إِنسَان",
+    "meaning": "Mensch"
+  },
+  {
+    "root": "رُوح",
+    "meaning": "Seele / Geist"
+  },
+  {
+    "root": "عَقْل",
+    "meaning": "Verstand / Vernunft"
+  },
+  {
+    "root": "قَلْب",
+    "meaning": "Herz"
+  },
+  {
+    "root": "نَفْس",
+    "meaning": "Seele / Selbst"
+  }
+]

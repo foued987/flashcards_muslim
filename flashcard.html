@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Flashcard Coranique</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a2a3a;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --card-bg: #f5f0e8;
+    --btn-bg: #1a2a3a;
+    --btn-hover: #2e4460;
+    --accent: #7b3f00;
+    --shadow: 0 8px 32px rgba(26,42,58,0.25);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Cinzel', serif;
+    background: radial-gradient(ellipse at 30% 20%, #2c1810 0%, #0d1b2a 60%, #0a1628 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    gap: 24px;
+  }
+  .header { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .app-title {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .language-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 30px;
+    padding: 6px 14px;
+    backdrop-filter: blur(8px);
+  }
+  .language-selector label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-light);
+    text-transform: uppercase;
+  }
+  #language-select {
+    background: transparent;
+    border: none;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    padding-right: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23c9a84c'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+  }
+  #language-select option { background: #1a2a3a; color: #fff; }
+  .flashcard-container { position: relative; width: 420px; height: 420px; }
+  .ring {
+    position: absolute; top: 50%; left: 50%;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    border: 1px dashed rgba(201,168,76,0.15);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .flashcard {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 3px solid var(--gold);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 16px;
+    cursor: pointer; user-select: none;
+    box-shadow: 0 0 0 6px rgba(201,168,76,0.12), var(--shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    z-index: 5;
+  }
+  .flashcard:hover {
+    transform: translate(-50%, -50%) scale(1.03);
+    box-shadow: 0 0 0 10px rgba(201,168,76,0.18), 0 12px 40px rgba(26,42,58,0.4);
+  }
+  #card-word {
+    font-family: 'Amiri', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.2;
+  }
+  #card-hint {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: #888;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+  #words-learned {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(52px, -116px);
+    background: #c0392b; color: white;
+    border-radius: 50%; width: 32px; height: 32px;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 10; border: 2px solid #fff;
+  }
+  .progress-info {
+    position: absolute; bottom: 10px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px; letter-spacing: 2px;
+    color: rgba(201,168,76,0.6);
+    text-transform: uppercase;
+  }
+  .button-circle {
+    position: absolute;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--btn-bg);
+    color: var(--gold);
+    border: 2px solid rgba(201,168,76,0.35);
+    cursor: pointer; font-size: 18px;
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    transition: background 0.25s, border-color 0.25s,
+                transform 0.45s cubic-bezier(.34,1.2,.64,1),
+                opacity 0.35s ease;
+    top: 50%; left: 50%;
+  }
+  .button-circle:hover:not(:disabled) {
+    background: var(--btn-hover);
+    border-color: var(--gold);
+  }
+  .button-circle:disabled { opacity: 0.3; cursor: not-allowed; }
+  /* Rétracté : retour au centre invisible */
+  .button-circle.retracted {
+    transform: translate(-26px, -26px) scale(0) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  /* Hint autour du ring quand boutons cachés */
+  .ring-hint {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, calc(-50% + 155px));
+    font-size: 9px; letter-spacing: 2px;
+    color: rgba(201,168,76,0.4);
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: opacity 0.4s;
+    white-space: nowrap;
+  }
+  .ring-hint.hidden { opacity: 0; }
+  .button-circle[title]:hover::after {
+    content: attr(title);
+    position: absolute; bottom: 58px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26,42,58,0.95);
+    color: var(--gold-light);
+    padding: 4px 10px; border-radius: 6px;
+    white-space: nowrap; font-size: 10px; letter-spacing: 1px;
+    pointer-events: none; z-index: 20;
+    border: 1px solid rgba(201,168,76,0.3);
+  }
+  #toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(26,42,58,0.95);
+    color: var(--gold-light);
+    padding: 10px 22px; border-radius: 30px;
+    font-size: 12px; letter-spacing: 1.5px;
+    border: 1px solid rgba(201,168,76,0.4);
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+    z-index: 200; pointer-events: none;
+  }
+  .flashcard.revealed-top::before {
+    content: '✓';
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #27ae60;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .flashcard.revealed-top::after {
+    content: '→';
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #e67e22;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="app-title">Flashcard Coranique</div>
+  <div class="language-selector">
+    <label>Langue</label>
+    <select id="language-select" onchange="loadLanguage()">
+      <option value="">— Choisir —</option>
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+      <option value="ar">العربية</option>
+      <option value="es">Español</option>
+      <option value="de">Deutsch</option>
+    </select>
+  </div>
+</div>
+
+<div class="flashcard-container">
+  <div class="ring"></div>
+  <div class="ring-hint hidden" id="ring-hint">Cliquer ici pour les actions</div>
+  <div class="flashcard" id="flashcard" onclick="handleCardClick(event)">
+    <div id="card-word">بِسْمِ</div>
+    <div id="card-hint">Choisir une langue</div>
+  </div>
+  <span id="words-learned" title="Mots appris">0</span>
+  <div class="progress-info" id="progress-info">—/—</div>
+  <button class="button-circle" id="prev-btn"    title="Précédent"       onclick="prevCard()"       disabled>⬅</button>
+  <button class="button-circle" id="next-btn"    title="Suivant"         onclick="nextCard()"       disabled>➡</button>
+  <button class="button-circle" id="sound-btn"   title="Écouter"         onclick="playSound()"      disabled>🔊</button>
+  <button class="button-circle" id="record-btn"  title="Enregistrer"     onclick="startRecording()" disabled>🎤</button>
+  <button class="button-circle" id="stop-btn"    title="Arrêter"         onclick="stopRecording()"  disabled>⏹</button>
+  <button class="button-circle" id="play-btn"    title="Écouter enreg."  onclick="playRecording()"  disabled>▶</button>
+  <button class="button-circle" id="learned-btn" title="Mot appris"      onclick="markLearned()"    disabled>✓</button>
+  <button class="button-circle" id="review-btn"  title="À revoir"        onclick="markForReview()"  disabled>✗</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  DONNÉES DE SECOURS (fallback hors-ligne)
+//  Ces données sont utilisées si GitHub est
+//  inaccessible ou non configuré
+// ══════════════════════════════════════════
+const WORDS = {
+  fr: [
+    {root:"بِسْمِ",     meaning:"Au nom de"},
+    {root:"اللَّه",     meaning:"Allah (Dieu)"},
+    {root:"الرَّحْمَن", meaning:"Le Tout Miséricordieux"},
+    {root:"الرَّحِيم",  meaning:"Le Très Miséricordieux"},
+    {root:"رَبّ",       meaning:"Seigneur / Maître"},
+    {root:"عَالَمِين",  meaning:"Les mondes / L'univers"},
+    {root:"يَوْم",      meaning:"Jour"},
+    {root:"دِين",       meaning:"Religion / Jugement"},
+    {root:"إِيَّاك",    meaning:"Toi seul"},
+    {root:"نَعْبُد",    meaning:"Nous adorons"},
+    {root:"نَسْتَعِين", meaning:"Nous implorons l'aide"},
+    {root:"اهْدِنَا",   meaning:"Guide-nous"},
+    {root:"صِرَاط",     meaning:"Chemin / Voie"},
+    {root:"مُسْتَقِيم", meaning:"Droit / Rectiligne"},
+    {root:"نُور",       meaning:"Lumière"},
+    {root:"حَمْد",      meaning:"Louange / Gratitude"},
+    {root:"مَلِك",      meaning:"Roi / Souverain"},
+    {root:"قُلْ",       meaning:"Dis !"},
+    {root:"هُوَ",       meaning:"Lui / Il"},
+    {root:"أَحَد",      meaning:"Un / Unique"},
+    {root:"صَمَد",      meaning:"L'Absolu / L'Éternel"},
+    {root:"كُفُوًا",    meaning:"Égal / Comparable"},
+    {root:"فَلَق",      meaning:"L'aube / Lever du jour"},
+    {root:"وَسْوَاس",   meaning:"Chuchotement malin"},
+    {root:"نَاس",       meaning:"Les hommes / L'humanité"},
+    {root:"إِنسَان",    meaning:"Être humain"},
+    {root:"عَلَق",      meaning:"Embryon / Sang coagulé"},
+    {root:"قَلَم",      meaning:"Plume / Stylo"},
+    {root:"عِلْم",      meaning:"Science / Connaissance"},
+    {root:"عَدْل",      meaning:"Justice / Équité"},
+    {root:"رَحْمَة",    meaning:"Miséricorde / Compassion"},
+    {root:"صَبْر",      meaning:"Patience / Persévérance"},
+    {root:"شُكْر",      meaning:"Gratitude / Reconnaissance"},
+    {root:"تَوْبَة",    meaning:"Repentir / Retour à Dieu"},
+    {root:"إِيمَان",    meaning:"Foi / Croyance"},
+    {root:"إِسْلَام",   meaning:"Soumission à Dieu / Islam"},
+    {root:"صَلَاة",     meaning:"Prière rituelle"},
+    {root:"زَكَاة",     meaning:"Aumône obligatoire"},
+    {root:"صِيَام",     meaning:"Jeûne"},
+    {root:"حَجّ",       meaning:"Pèlerinage à La Mecque"},
+    {root:"جَنَّة",     meaning:"Paradis / Jardin"},
+    {root:"نَار",       meaning:"Feu / Enfer"},
+    {root:"مَلَك",      meaning:"Ange"},
+    {root:"نَبِيّ",     meaning:"Prophète"},
+    {root:"أُمَّة",     meaning:"Communauté / Nation"},
+    {root:"آيَة",       meaning:"Verset / Signe"},
+    {root:"سُورَة",     meaning:"Sourate / Chapitre"},
+    {root:"حَقّ",       meaning:"Vérité / Droit"},
+    {root:"خَيْر",      meaning:"Bien / Bonté"},
+    {root:"تَقْوَى",    meaning:"Piété / Crainte de Dieu"}
+  ],
+  en: [
+    {root:"بِسْمِ",     meaning:"In the name of"},
+    {root:"اللَّه",     meaning:"Allah (God)"},
+    {root:"الرَّحْمَن", meaning:"The Most Gracious"},
+    {root:"الرَّحِيم",  meaning:"The Most Merciful"},
+    {root:"رَبّ",       meaning:"Lord / Sustainer"},
+    {root:"عَالَمِين",  meaning:"The worlds / All creation"},
+    {root:"يَوْم",      meaning:"Day"},
+    {root:"دِين",       meaning:"Religion / Judgment"},
+    {root:"إِيَّاك",    meaning:"You alone"},
+    {root:"نَعْبُد",    meaning:"We worship"},
+    {root:"نَسْتَعِين", meaning:"We seek help"},
+    {root:"اهْدِنَا",   meaning:"Guide us"},
+    {root:"صِرَاط",     meaning:"Path / Way"},
+    {root:"مُسْتَقِيم", meaning:"Straight / Upright"},
+    {root:"نُور",       meaning:"Light"},
+    {root:"حَمْد",      meaning:"Praise / Gratitude"},
+    {root:"مَلِك",      meaning:"King / Sovereign"},
+    {root:"قُلْ",       meaning:"Say!"},
+    {root:"هُوَ",       meaning:"He / Him"},
+    {root:"أَحَد",      meaning:"One / Unique"},
+    {root:"صَمَد",      meaning:"The Eternal / Self-Sufficient"},
+    {root:"كُفُوًا",    meaning:"Equal / Comparable"},
+    {root:"فَلَق",      meaning:"Daybreak / Dawn"},
+    {root:"وَسْوَاس",   meaning:"Evil whispering"},
+    {root:"نَاس",       meaning:"People / Mankind"},
+    {root:"إِنسَان",    meaning:"Human being"},
+    {root:"عَلَق",      meaning:"Clinging clot / Embryo"},
+    {root:"قَلَم",      meaning:"Pen / Quill"},
+    {root:"عِلْم",      meaning:"Knowledge / Science"},
+    {root:"عَدْل",      meaning:"Justice / Equity"},
+    {root:"رَحْمَة",    meaning:"Mercy / Compassion"},
+    {root:"صَبْر",      meaning:"Patience / Perseverance"},
+    {root:"شُكْر",      meaning:"Gratitude / Thankfulness"},
+    {root:"تَوْبَة",    meaning:"Repentance / Return to God"},
+    {root:"إِيمَان",    meaning:"Faith / Belief"},
+    {root:"إِسْلَام",   meaning:"Submission to God / Islam"},
+    {root:"صَلَاة",     meaning:"Ritual prayer"},
+    {root:"زَكَاة",     meaning:"Obligatory almsgiving"},
+    {root:"صِيَام",     meaning:"Fasting"},
+    {root:"حَجّ",       meaning:"Pilgrimage to Mecca"},
+    {root:"جَنَّة",     meaning:"Paradise / Garden"},
+    {root:"نَار",       meaning:"Fire / Hell"},
+    {root:"مَلَك",      meaning:"Angel"},
+    {root:"نَبِيّ",     meaning:"Prophet"},
+    {root:"أُمَّة",     meaning:"Community / Nation"},
+    {root:"آيَة",       meaning:"Verse / Sign"},
+    {root:"سُورَة",     meaning:"Chapter of the Quran"},
+    {root:"حَقّ",       meaning:"Truth / Right"},
+    {root:"خَيْر",      meaning:"Good / Goodness"},
+    {root:"تَقْوَى",    meaning:"God-consciousness / Piety"}
+  ],
+  ar: [
+    {root:"بِسْمِ",     meaning:"ابتداءً باسم الله"},
+    {root:"اللَّه",     meaning:"اسم الذات الإلهية العلية"},
+    {root:"الرَّحْمَن", meaning:"واسع الرحمة لجميع الخلق"},
+    {root:"الرَّحِيم",  meaning:"خاص الرحمة بالمؤمنين"},
+    {root:"رَبّ",       meaning:"المالك والمربي والسيد"},
+    {root:"عَالَمِين",  meaning:"جميع المخلوقات والأكوان"},
+    {root:"يَوْم",      meaning:"الوقت من الفجر إلى الغروب"},
+    {root:"دِين",       meaning:"الجزاء والحساب / المنهج"},
+    {root:"إِيَّاك",    meaning:"ضمير نصب للمخاطب وحده"},
+    {root:"نَعْبُد",    meaning:"نُذِلّ ونخضع تعبداً وطاعةً"},
+    {root:"نَسْتَعِين", meaning:"نطلب العون والمساعدة"},
+    {root:"اهْدِنَا",   meaning:"أرشدنا وبيّن لنا الطريق"},
+    {root:"صِرَاط",     meaning:"الطريق الواضح الواسع"},
+    {root:"مُسْتَقِيم", meaning:"المعتدل الذي لا عِوَج فيه"},
+    {root:"نُور",       meaning:"الضياء الذي يُزيل الظلام"},
+    {root:"حَمْد",      meaning:"الثناء الجميل على المُنعِم"},
+    {root:"مَلِك",      meaning:"صاحب السلطة والملك"},
+    {root:"قُلْ",       meaning:"أمر بالقول والإعلان"},
+    {root:"هُوَ",       meaning:"ضمير الغائب المفرد المذكر"},
+    {root:"أَحَد",      meaning:"الواحد الفرد لا شريك له"},
+    {root:"صَمَد",      meaning:"الذي يُصمَد إليه في الحاجات"},
+    {root:"كُفُوًا",    meaning:"المِثل والنظير والمكافئ"},
+    {root:"فَلَق",      meaning:"الصبح وانشقاق الفجر"},
+    {root:"وَسْوَاس",   meaning:"إلقاء الشيطان في القلب"},
+    {root:"نَاس",       meaning:"بنو آدم / البشر جميعاً"},
+    {root:"إِنسَان",    meaning:"الكائن البشري المكلَّف"},
+    {root:"عَلَق",      meaning:"الدم الجامد المتعلق بالرحم"},
+    {root:"قَلَم",      meaning:"أداة الكتابة"},
+    {root:"عِلْم",      meaning:"إدراك الشيء على حقيقته"},
+    {root:"عَدْل",      meaning:"الإنصاف ووضع الأمور مواضعها"},
+    {root:"رَحْمَة",    meaning:"الشفقة المؤدية للإحسان"},
+    {root:"صَبْر",      meaning:"حبس النفس عن الجزع"},
+    {root:"شُكْر",      meaning:"الاعتراف بالنعمة والثناء"},
+    {root:"تَوْبَة",    meaning:"الرجوع إلى الله والندم"},
+    {root:"إِيمَان",    meaning:"التصديق والإقرار والعمل"},
+    {root:"إِسْلَام",   meaning:"الاستسلام لله والانقياد"},
+    {root:"صَلَاة",     meaning:"العبادة ذات الأركان والشروط"},
+    {root:"زَكَاة",     meaning:"حق واجب في المال للمستحقين"},
+    {root:"صِيَام",     meaning:"الإمساك من الفجر للغروب"},
+    {root:"حَجّ",       meaning:"قصد البيت الحرام للمناسك"},
+    {root:"جَنَّة",     meaning:"دار النعيم للمؤمنين"},
+    {root:"نَار",       meaning:"دار العذاب للكافرين"},
+    {root:"مَلَك",      meaning:"كائن نوراني مأمور من الله"},
+    {root:"نَبِيّ",     meaning:"مَن أوحى إليه الله بشريعة"},
+    {root:"أُمَّة",     meaning:"الجماعة المتحدة في الدين"},
+    {root:"آيَة",       meaning:"جملة من القرآن / علامة"},
+    {root:"سُورَة",     meaning:"طائفة من الآيات لها مطلع"},
+    {root:"حَقّ",       meaning:"الصحيح الثابت بلا شك"},
+    {root:"خَيْر",      meaning:"ما يُرغب فيه ويُحمد"},
+    {root:"تَقْوَى",    meaning:"اتقاء عذاب الله بطاعته"}
+  ],
+  es: [
+    {root:"بِسْمِ",     meaning:"En el nombre de"},
+    {root:"اللَّه",     meaning:"Allah (Dios)"},
+    {root:"الرَّحْمَن", meaning:"El Compasivo"},
+    {root:"الرَّحِيم",  meaning:"El Misericordioso"},
+    {root:"رَبّ",       meaning:"Señor / Sustentador"},
+    {root:"عَالَمِين",  meaning:"Los mundos / Toda la creación"},
+    {root:"يَوْم",      meaning:"Día"},
+    {root:"دِين",       meaning:"Religión / Juicio"},
+    {root:"إِيَّاك",    meaning:"Solo a Ti"},
+    {root:"نَعْبُد",    meaning:"Adoramos"},
+    {root:"نَسْتَعِين", meaning:"Imploramos ayuda"},
+    {root:"اهْدِنَا",   meaning:"Guíanos"},
+    {root:"صِرَاط",     meaning:"Camino / Senda"},
+    {root:"مُسْتَقِيم", meaning:"Recto / Derecho"},
+    {root:"نُور",       meaning:"Luz"},
+    {root:"حَمْد",      meaning:"Alabanza / Gratitud"},
+    {root:"مَلِك",      meaning:"Rey / Soberano"},
+    {root:"قُلْ",       meaning:"¡Di!"},
+    {root:"هُوَ",       meaning:"Él"},
+    {root:"أَحَد",      meaning:"Uno / Único"},
+    {root:"صَمَد",      meaning:"El Eterno / El Absoluto"},
+    {root:"كُفُوًا",    meaning:"Igual / Comparable"},
+    {root:"فَلَق",      meaning:"El amanecer / El alba"},
+    {root:"وَسْوَاس",   meaning:"Susurro / Insinuación maligna"},
+    {root:"نَاس",       meaning:"La gente / La humanidad"},
+    {root:"إِنسَان",    meaning:"Ser humano"},
+    {root:"عَلَق",      meaning:"Embrión / Coágulo de sangre"},
+    {root:"قَلَم",      meaning:"Pluma / Cálamo"},
+    {root:"عِلْم",      meaning:"Conocimiento / Ciencia"},
+    {root:"عَدْل",      meaning:"Justicia / Equidad"},
+    {root:"رَحْمَة",    meaning:"Misericordia / Compasión"},
+    {root:"صَبْر",      meaning:"Paciencia / Perseverancia"},
+    {root:"شُكْر",      meaning:"Gratitud / Agradecimiento"},
+    {root:"تَوْبَة",    meaning:"Arrepentimiento / Regreso a Dios"},
+    {root:"إِيمَان",    meaning:"Fe / Creencia"},
+    {root:"إِسْلَام",   meaning:"Sumisión a Dios / Islam"},
+    {root:"صَلَاة",     meaning:"Oración ritual"},
+    {root:"زَكَاة",     meaning:"Limosna obligatoria"},
+    {root:"صِيَام",     meaning:"Ayuno"},
+    {root:"حَجّ",       meaning:"Peregrinación a La Meca"},
+    {root:"جَنَّة",     meaning:"Paraíso / Jardín"},
+    {root:"نَار",       meaning:"Fuego / Infierno"},
+    {root:"مَلَك",      meaning:"Ángel"},
+    {root:"نَبِيّ",     meaning:"Profeta"},
+    {root:"أُمَّة",     meaning:"Comunidad / Nación"},
+    {root:"آيَة",       meaning:"Versículo / Signo"},
+    {root:"سُورَة",     meaning:"Capítulo del Corán"},
+    {root:"حَقّ",       meaning:"Verdad / Derecho"},
+    {root:"خَيْر",      meaning:"Bien / Bondad"},
+    {root:"تَقْوَى",    meaning:"Piedad / Conciencia de Dios"}
+  ],
+  de: [
+    {root:"بِسْمِ",     meaning:"Im Namen von"},
+    {root:"اللَّه",     meaning:"Allah (Gott)"},
+    {root:"الرَّحْمَن", meaning:"Der Allerbarmer"},
+    {root:"الرَّحِيم",  meaning:"Der Barmherzige"},
+    {root:"رَبّ",       meaning:"Herr / Erhalter"},
+    {root:"عَالَمِين",  meaning:"Die Welten / Die Schöpfung"},
+    {root:"يَوْم",      meaning:"Tag"},
+    {root:"دِين",       meaning:"Religion / Gericht"},
+    {root:"إِيَّاك",    meaning:"Nur Dir allein"},
+    {root:"نَعْبُد",    meaning:"Wir verehren / beten an"},
+    {root:"نَسْتَعِين", meaning:"Wir erbitten Hilfe"},
+    {root:"اهْدِنَا",   meaning:"Leite uns / Führe uns"},
+    {root:"صِرَاط",     meaning:"Pfad / Weg"},
+    {root:"مُسْتَقِيم", meaning:"Gerade / Aufrecht"},
+    {root:"نُور",       meaning:"Licht"},
+    {root:"حَمْد",      meaning:"Lob / Dank"},
+    {root:"مَلِك",      meaning:"König / Herrscher"},
+    {root:"قُلْ",       meaning:"Sprich! / Sag!"},
+    {root:"هُوَ",       meaning:"Er / Ihm"},
+    {root:"أَحَد",      meaning:"Einer / Einzigartiger"},
+    {root:"صَمَد",      meaning:"Der Ewige / Der Absolute"},
+    {root:"كُفُوًا",    meaning:"Gleich / Vergleichbar"},
+    {root:"فَلَق",      meaning:"Morgengrauen / Tagesanbruch"},
+    {root:"وَسْوَاس",   meaning:"Böse Einflüsterung"},
+    {root:"نَاس",       meaning:"Die Menschen / Die Menschheit"},
+    {root:"إِنسَان",    meaning:"Mensch / Menschliches Wesen"},
+    {root:"عَلَق",      meaning:"Blutgerinnsel / Embryo"},
+    {root:"قَلَم",      meaning:"Feder / Schreibrohr"},
+    {root:"عِلْم",      meaning:"Wissen / Wissenschaft"},
+    {root:"عَدْل",      meaning:"Gerechtigkeit / Fairness"},
+    {root:"رَحْمَة",    meaning:"Barmherzigkeit / Mitgefühl"},
+    {root:"صَبْر",      meaning:"Geduld / Ausdauer"},
+    {root:"شُكْر",      meaning:"Dankbarkeit / Anerkennung"},
+    {root:"تَوْبَة",    meaning:"Reue / Umkehr zu Gott"},
+    {root:"إِيمَان",    meaning:"Glaube / Überzeugung"},
+    {root:"إِسْلَام",   meaning:"Hingabe an Gott / Islam"},
+    {root:"صَلَاة",     meaning:"Ritualgebet"},
+    {root:"زَكَاة",     meaning:"Pflichtalmosen"},
+    {root:"صِيَام",     meaning:"Fasten"},
+    {root:"حَجّ",       meaning:"Pilgerfahrt nach Mekka"},
+    {root:"جَنَّة",     meaning:"Paradies / Garten"},
+    {root:"نَار",       meaning:"Feuer / Hölle"},
+    {root:"مَلَك",      meaning:"Engel"},
+    {root:"نَبِيّ",     meaning:"Prophet"},
+    {root:"أُمَّة",     meaning:"Gemeinschaft / Volk"},
+    {root:"آيَة",       meaning:"Vers / Zeichen"},
+    {root:"سُورَة",     meaning:"Kapitel des Korans"},
+    {root:"حَقّ",       meaning:"Wahrheit / Recht"},
+    {root:"خَيْر",      meaning:"Gut / Güte"},
+    {root:"تَقْوَى",    meaning:"Gottesfurcht / Frömmigkeit"}
+  ]
+};
+
+// ══════════════════════════════════════════
+//  ÉTAT & DOM
+// ══════════════════════════════════════════
+let cards = [], currentIndex = 0, revealed = false;
+let learnedCount = 0, currentLanguage = '';
+let learnedCards = new Set();
+let mediaRecorder, audioChunks = [], recordedAudioURL;
+
+const cardWordEl = document.getElementById('card-word');
+const cardHintEl = document.getElementById('card-hint');
+const learnedEl  = document.getElementById('words-learned');
+const progressEl = document.getElementById('progress-info');
+const buttons    = document.querySelectorAll('.button-circle');
+
+// ── Positionnement circulaire ──
+const RADIUS = 158;
+let buttonsVisible = true;
+
+buttons.forEach((btn, i) => {
+  const angle = (i / buttons.length) * 2 * Math.PI - Math.PI / 2;
+  const x = Math.round(RADIUS * Math.cos(angle)) - 26;
+  const y = Math.round(RADIUS * Math.sin(angle)) - 26;
+  btn.dataset.tx = x;
+  btn.dataset.ty = y;
+  btn.style.transform = `translate(${x}px, ${y}px)`;
+  btn.addEventListener('mouseenter', () => {
+    if (!btn.disabled && buttonsVisible) btn.style.transform = `translate(${x}px, ${y}px) scale(1.12)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    if (buttonsVisible) btn.style.transform = `translate(${x}px, ${y}px)`;
+  });
+});
+
+function retractButtons() {
+  if (!buttonsVisible) return;
+  buttonsVisible = false;
+  buttons.forEach(b => b.classList.add('retracted'));
+  document.getElementById('ring-hint').classList.remove('hidden');
+}
+
+function expandButtons() {
+  if (buttonsVisible) return;
+  buttonsVisible = true;
+  buttons.forEach(btn => {
+    btn.classList.remove('retracted');
+    btn.style.transform = `translate(${btn.dataset.tx}px, ${btn.dataset.ty}px)`;
+  });
+  document.getElementById('ring-hint').classList.add('hidden');
+}
+
+// Clic sur le container (hors carte) → afficher/masquer boutons
+document.querySelector('.flashcard-container').addEventListener('click', (e) => {
+  const card = document.getElementById('flashcard');
+  const rect = card.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const dx = e.clientX - cx;
+  const dy = e.clientY - cy;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  // Si clic en dehors du rayon de la carte (100px) → toggle boutons
+  if (dist > 100) {
+    if (buttonsVisible) retractButtons();
+    else expandButtons();
+  }
+});
+
+// ── Toast ──
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ══════════════════════════════════════════
+//  CONFIG GITHUB
+//  → Remplacez par votre propre URL après avoir
+//    créé votre dépôt GitHub (voir instructions)
+// ══════════════════════════════════════════
+const GITHUB_BASE = 'https://raw.githubusercontent.com/VOTRE_USERNAME/quran-flashcards/main/';
+
+const LANG_FILES = {
+  fr: 'wordsfr.json',
+  en: 'wordsen.json',
+  ar: 'wordsar.json',
+  es: 'wordses.json',
+  de: 'words_de.json'
+};
+
+// ── Charger une langue (GitHub en priorité, fallback local) ──
+async function loadLanguage() {
+  const lang = document.getElementById('language-select').value;
+  if (!lang) { resetApp(); return; }
+
+  currentLanguage = lang;
+  currentIndex = 0;
+  revealed = false;
+  learnedCount = 0;
+  learnedCards.clear();
+
+  // Indicateur de chargement
+  cardWordEl.style.cssText = 'font-family:Cinzel,serif;font-size:13px;color:#888';
+  cardWordEl.textContent = 'Chargement…';
+  cardHintEl.textContent = '';
+  disableButtons(true);
+
+  // 1. Essai depuis GitHub
+  if (!GITHUB_BASE.includes('VOTRE_USERNAME')) {
+    try {
+      const url = GITHUB_BASE + LANG_FILES[lang];
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      cards = data.sort(() => Math.random() - 0.5);
+      showCard();
+      disableButtons(false);
+      toast(`☁️ ${cards.length} mots chargés depuis GitHub`);
+      return;
+    } catch (err) {
+      console.warn('GitHub inaccessible, fallback local :', err);
+      toast('⚠️ GitHub inaccessible — données locales utilisées');
+    }
+  }
+
+  // 2. Fallback : données embarquées
+  cards = WORDS[lang] ? [...WORDS[lang]].sort(() => Math.random() - 0.5) : [];
+  if (!cards.length) { toast('❌ Aucune donnée pour cette langue'); return; }
+  showCard();
+  disableButtons(false);
+  toast(`📦 ${cards.length} mots (données locales)`);
+}
+
+// ── Reset ──
+function resetApp() {
+  cards = []; currentIndex = 0; revealed = false;
+  learnedCount = 0; currentLanguage = ''; learnedCards.clear();
+  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:30px;font-weight:700;color:#7b3f00;line-height:1.2';
+  cardWordEl.textContent = 'بِسْمِ';
+  cardHintEl.textContent = 'Choisir une langue';
+  disableButtons(true);
+  updateProgress();
+}
+
+function disableButtons(state) { buttons.forEach(b => b.disabled = state); }
+
+function updateProgress() {
+  learnedEl.textContent = learnedCount;
+  progressEl.textContent = cards.length ? `${currentIndex + 1} / ${cards.length}` : '—/—';
+}
+
+// ── Afficher carte (recto) ──
+function showCard() {
+  if (!cards.length) return;
+  revealed = false;
+  document.getElementById('flashcard').classList.remove('revealed-top');
+  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:30px;font-weight:700;color:#7b3f00;line-height:1.2';
+  cardWordEl.textContent = cards[currentIndex].root || '?';
+  cardHintEl.textContent = '👆 Cliquer pour révéler';
+  updateProgress();
+}
+
+// ── Clic sur la carte ──
+function handleCardClick(e) {
+  if (!cards.length) return;
+  if (!revealed) {
+    // 1er clic : retourner la carte + rétracter boutons
+    revealed = true;
+    retractButtons();
+    cardWordEl.style.cssText = 'font-family:Cinzel,serif;font-size:13px;font-weight:600;color:#1a2a3a;line-height:1.4';
+    cardWordEl.textContent = cards[currentIndex].meaning || '—';
+    cardHintEl.textContent = '⬆ Appris  |  ⬇ Passer';
+    document.getElementById('flashcard').classList.add('revealed-top');
+    return;
+  }
+  // 2e clic : moitié haute = appris, moitié basse = passer
+  const rect = e.currentTarget.getBoundingClientRect();
+  const clickY = e.clientY - rect.top;
+  if (clickY < rect.height / 2) {
+    // Moitié HAUTE → valider l'apprentissage
+    if (!learnedCards.has(currentIndex)) {
+      learnedCards.add(currentIndex);
+      learnedCount++;
+      updateProgress();
+      toast('✅ Mot appris !');
+    } else {
+      toast('Déjà marqué comme appris');
+    }
+  } else {
+    // Moitié BASSE → passer sans valider
+    toast('⏭ Mot passé');
+  }
+  nextCard();
+}
+
+function revealMeaning() {} // conservé pour compatibilité clavier
+
+// ── Navigation ──
+function nextCard() {
+  if (!cards.length) return;
+  currentIndex++;
+  if (currentIndex >= cards.length) {
+    // Fin du jeu : mélanger à nouveau
+    cards.sort(() => Math.random() - 0.5);
+    currentIndex = 0;
+    toast('🔀 Jeu mélangé, c\'est reparti !');
+  }
+  showCard();
+}
+function prevCard() { if (cards.length) { currentIndex = (currentIndex - 1 + cards.length) % cards.length; showCard(); } }
+
+// ── Audio ──
+function playSound() { toast('🔊 Ajoutez vos fichiers audio dans audio/{lang}/'); }
+
+// ── Enregistrement ──
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.addEventListener('dataavailable', e => audioChunks.push(e.data));
+      mediaRecorder.start();
+      document.getElementById('record-btn').style.color = '#e74c3c';
+      toast('🎤 Enregistrement en cours…');
+    })
+    .catch(() => toast('⚠️ Microphone inaccessible'));
+}
+
+function stopRecording() {
+  if (mediaRecorder?.state === 'recording') {
+    mediaRecorder.stop();
+    mediaRecorder.addEventListener('stop', () => {
+      recordedAudioURL = URL.createObjectURL(new Blob(audioChunks));
+      document.getElementById('record-btn').style.color = '';
+      toast('✓ Enregistrement sauvegardé');
+    });
+  }
+}
+
+function playRecording() {
+  if (recordedAudioURL) new Audio(recordedAudioURL).play();
+  else toast('⚠️ Enregistre un mot d\'abord !');
+}
+
+// ── Apprentissage ──
+function markLearned() {
+  if (!cards.length) return;
+  if (!learnedCards.has(currentIndex)) {
+    learnedCards.add(currentIndex); learnedCount++;
+    updateProgress(); toast('✅ Mot appris !');
+  } else { toast('Déjà marqué comme appris'); }
+  nextCard();
+}
+
+function markForReview() {
+  if (!cards.length) return;
+  if (learnedCards.has(currentIndex)) { learnedCards.delete(currentIndex); learnedCount--; updateProgress(); }
+  toast('🔄 Remis en révision');
+  nextCard();
+}
+
+// ── Clavier ──
+document.addEventListener('keydown', e => {
+  if (!cards.length) return;
+  if (e.key === 'ArrowLeft')  prevCard();
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextCard(); }
+  if (e.key === 'Enter') {
+    if (!revealed) handleCardClick({ currentTarget: document.getElementById('flashcard'), clientY: 0, target: null, getBoundingClientRect: ()=>({top:0,height:200}) });
+    else nextCard();
+  }
+});
+
+resetApp();
+</script>
+</body>
+</html>

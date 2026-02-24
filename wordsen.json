@@ -1,0 +1,574 @@
+[
+  {
+    "root": "بِسْمِ",
+    "meaning": "In the name of"
+  },
+  {
+    "root": "اللَّه",
+    "meaning": "Allah (God)"
+  },
+  {
+    "root": "الرَّحْمَن",
+    "meaning": "The Most Gracious"
+  },
+  {
+    "root": "الرَّحِيم",
+    "meaning": "The Most Merciful"
+  },
+  {
+    "root": "رَبّ",
+    "meaning": "Lord / Sustainer"
+  },
+  {
+    "root": "عَالَمِين",
+    "meaning": "The worlds / All creation"
+  },
+  {
+    "root": "يَوْم",
+    "meaning": "Day"
+  },
+  {
+    "root": "دِين",
+    "meaning": "Religion / Judgment"
+  },
+  {
+    "root": "إِيَّاك",
+    "meaning": "You alone"
+  },
+  {
+    "root": "نَعْبُد",
+    "meaning": "We worship"
+  },
+  {
+    "root": "نَسْتَعِين",
+    "meaning": "We seek help"
+  },
+  {
+    "root": "اهْدِنَا",
+    "meaning": "Guide us"
+  },
+  {
+    "root": "صِرَاط",
+    "meaning": "Path / Way"
+  },
+  {
+    "root": "مُسْتَقِيم",
+    "meaning": "Straight / Upright"
+  },
+  {
+    "root": "أَنْعَمْت",
+    "meaning": "You have blessed"
+  },
+  {
+    "root": "مَغْضُوب",
+    "meaning": "Those upon whom is anger"
+  },
+  {
+    "root": "ضَالِّين",
+    "meaning": "The astray"
+  },
+  {
+    "root": "نُور",
+    "meaning": "Light"
+  },
+  {
+    "root": "حَمْد",
+    "meaning": "Praise / Gratitude"
+  },
+  {
+    "root": "مَلِك",
+    "meaning": "King / Sovereign"
+  },
+  {
+    "root": "قُلْ",
+    "meaning": "Say!"
+  },
+  {
+    "root": "هُوَ",
+    "meaning": "He / Him"
+  },
+  {
+    "root": "أَحَد",
+    "meaning": "One / Unique"
+  },
+  {
+    "root": "صَمَد",
+    "meaning": "The Eternal / Self-Sufficient"
+  },
+  {
+    "root": "يَلِد",
+    "meaning": "He begets not"
+  },
+  {
+    "root": "يُولَد",
+    "meaning": "Nor was He begotten"
+  },
+  {
+    "root": "كُفُوًا",
+    "meaning": "Equal / Comparable"
+  },
+  {
+    "root": "فَلَق",
+    "meaning": "Daybreak / Dawn"
+  },
+  {
+    "root": "وَسْوَاس",
+    "meaning": "Evil whispering"
+  },
+  {
+    "root": "نَاس",
+    "meaning": "People / Mankind"
+  },
+  {
+    "root": "إِيمَان",
+    "meaning": "Faith / Belief"
+  },
+  {
+    "root": "إِسْلَام",
+    "meaning": "Submission to God / Islam"
+  },
+  {
+    "root": "إِحْسَان",
+    "meaning": "Spiritual excellence"
+  },
+  {
+    "root": "تَوْحِيد",
+    "meaning": "Monotheism / Oneness of God"
+  },
+  {
+    "root": "شِرْك",
+    "meaning": "Polytheism / Association with God"
+  },
+  {
+    "root": "كُفْر",
+    "meaning": "Disbelief / Ingratitude"
+  },
+  {
+    "root": "نِفَاق",
+    "meaning": "Hypocrisy"
+  },
+  {
+    "root": "فُسُوق",
+    "meaning": "Immorality / Wickedness"
+  },
+  {
+    "root": "عِصْيَان",
+    "meaning": "Disobedience"
+  },
+  {
+    "root": "تَقْوَى",
+    "meaning": "God-consciousness / Piety"
+  },
+  {
+    "root": "وَرَع",
+    "meaning": "Pious caution"
+  },
+  {
+    "root": "زُهْد",
+    "meaning": "Asceticism / Detachment"
+  },
+  {
+    "root": "رَحْمَة",
+    "meaning": "Mercy / Compassion"
+  },
+  {
+    "root": "صَبْر",
+    "meaning": "Patience / Perseverance"
+  },
+  {
+    "root": "شُكْر",
+    "meaning": "Gratitude / Thankfulness"
+  },
+  {
+    "root": "تَوْبَة",
+    "meaning": "Repentance / Return to God"
+  },
+  {
+    "root": "عَدْل",
+    "meaning": "Justice / Equity"
+  },
+  {
+    "root": "إِنصَاف",
+    "meaning": "Fairness / Impartiality"
+  },
+  {
+    "root": "أَمَانَة",
+    "meaning": "Trustworthiness / Honesty"
+  },
+  {
+    "root": "صِدْق",
+    "meaning": "Sincerity / Truthfulness"
+  },
+  {
+    "root": "وَفَاء",
+    "meaning": "Loyalty / Faithfulness"
+  },
+  {
+    "root": "حَيَاء",
+    "meaning": "Modesty / Chastity"
+  },
+  {
+    "root": "كَرَم",
+    "meaning": "Generosity / Nobility"
+  },
+  {
+    "root": "عَفْو",
+    "meaning": "Forgiveness / Clemency"
+  },
+  {
+    "root": "حِلْم",
+    "meaning": "Gentleness / Forbearance"
+  },
+  {
+    "root": "تَوَاضُع",
+    "meaning": "Humility"
+  },
+  {
+    "root": "إِخْلَاص",
+    "meaning": "Sincerity / Pure devotion"
+  },
+  {
+    "root": "صَلَاة",
+    "meaning": "Ritual prayer"
+  },
+  {
+    "root": "زَكَاة",
+    "meaning": "Obligatory almsgiving"
+  },
+  {
+    "root": "صِيَام",
+    "meaning": "Fasting"
+  },
+  {
+    "root": "حَجّ",
+    "meaning": "Pilgrimage to Mecca"
+  },
+  {
+    "root": "عُمْرَة",
+    "meaning": "Minor pilgrimage"
+  },
+  {
+    "root": "طَهَارَة",
+    "meaning": "Ritual purity"
+  },
+  {
+    "root": "وُضُوء",
+    "meaning": "Minor ablution"
+  },
+  {
+    "root": "غُسْل",
+    "meaning": "Full ablution"
+  },
+  {
+    "root": "تَيَمُّم",
+    "meaning": "Purification with earth"
+  },
+  {
+    "root": "قِبْلَة",
+    "meaning": "Direction of Mecca"
+  },
+  {
+    "root": "أَذَان",
+    "meaning": "Call to prayer"
+  },
+  {
+    "root": "إِقَامَة",
+    "meaning": "Second call before prayer"
+  },
+  {
+    "root": "رَكْعَة",
+    "meaning": "Unit of prayer"
+  },
+  {
+    "root": "سُجُود",
+    "meaning": "Prostration"
+  },
+  {
+    "root": "رُكُوع",
+    "meaning": "Bowing"
+  },
+  {
+    "root": "قِيَام",
+    "meaning": "Standing position (in prayer)"
+  },
+  {
+    "root": "تَشَهُّد",
+    "meaning": "Attestation of faith"
+  },
+  {
+    "root": "سَلَام",
+    "meaning": "Peace / Final greeting"
+  },
+  {
+    "root": "جَنَّة",
+    "meaning": "Paradise / Garden"
+  },
+  {
+    "root": "نَار",
+    "meaning": "Fire / Hell"
+  },
+  {
+    "root": "آخِرَة",
+    "meaning": "The Hereafter"
+  },
+  {
+    "root": "دُنْيَا",
+    "meaning": "This world / Present life"
+  },
+  {
+    "root": "بَعْث",
+    "meaning": "Resurrection"
+  },
+  {
+    "root": "قِيَامَة",
+    "meaning": "Day of Resurrection"
+  },
+  {
+    "root": "حِسَاب",
+    "meaning": "Judgment / Account"
+  },
+  {
+    "root": "مِيزَان",
+    "meaning": "Scale of deeds"
+  },
+  {
+    "root": "صِرَاط",
+    "meaning": "Bridge over Hell"
+  },
+  {
+    "root": "شَفَاعَة",
+    "meaning": "Intercession"
+  },
+  {
+    "root": "كَوْثَر",
+    "meaning": "River of Paradise"
+  },
+  {
+    "root": "حُور",
+    "meaning": "Houris / Wives of Paradise"
+  },
+  {
+    "root": "فِرْدَوْس",
+    "meaning": "The highest Paradise"
+  },
+  {
+    "root": "جَهَنَّم",
+    "meaning": "Gehenna / Hell"
+  },
+  {
+    "root": "مَلَك",
+    "meaning": "Angel"
+  },
+  {
+    "root": "نَبِيّ",
+    "meaning": "Prophet"
+  },
+  {
+    "root": "رَسُول",
+    "meaning": "Messenger / Envoy"
+  },
+  {
+    "root": "صِدِّيق",
+    "meaning": "The very truthful one"
+  },
+  {
+    "root": "شَهِيد",
+    "meaning": "Martyr / Witness"
+  },
+  {
+    "root": "وَلِيّ",
+    "meaning": "Saint / Friend of God"
+  },
+  {
+    "root": "إِمَام",
+    "meaning": "Imam / Leader of prayer"
+  },
+  {
+    "root": "عَالِم",
+    "meaning": "Islamic scholar"
+  },
+  {
+    "root": "جِبْرِيل",
+    "meaning": "Gabriel (angel of revelation)"
+  },
+  {
+    "root": "مِيكَائِيل",
+    "meaning": "Michael (angel)"
+  },
+  {
+    "root": "إِسْرَافِيل",
+    "meaning": "Israfil (angel of Judgment)"
+  },
+  {
+    "root": "إِبْلِيس",
+    "meaning": "Iblis / Satan"
+  },
+  {
+    "root": "شَيْطَان",
+    "meaning": "Demon / Devil"
+  },
+  {
+    "root": "جِنّ",
+    "meaning": "Jinn (invisible creature)"
+  },
+  {
+    "root": "قُرْآن",
+    "meaning": "The Quran"
+  },
+  {
+    "root": "سُورَة",
+    "meaning": "Chapter of the Quran"
+  },
+  {
+    "root": "آيَة",
+    "meaning": "Verse / Sign"
+  },
+  {
+    "root": "حَدِيث",
+    "meaning": "Prophetic saying"
+  },
+  {
+    "root": "سُنَّة",
+    "meaning": "Prophetic tradition"
+  },
+  {
+    "root": "تَفْسِير",
+    "meaning": "Quranic exegesis"
+  },
+  {
+    "root": "تَجْوِيد",
+    "meaning": "Correct Quran recitation"
+  },
+  {
+    "root": "حِفْظ",
+    "meaning": "Memorization"
+  },
+  {
+    "root": "تِلَاوَة",
+    "meaning": "Recitation of the Quran"
+  },
+  {
+    "root": "الغَفُور",
+    "meaning": "The Most Forgiving"
+  },
+  {
+    "root": "القَدِير",
+    "meaning": "The All-Powerful"
+  },
+  {
+    "root": "العَلِيم",
+    "meaning": "The All-Knowing"
+  },
+  {
+    "root": "السَّمِيع",
+    "meaning": "The All-Hearing"
+  },
+  {
+    "root": "البَصِير",
+    "meaning": "The All-Seeing"
+  },
+  {
+    "root": "الحَكِيم",
+    "meaning": "The Wise / The Just"
+  },
+  {
+    "root": "الخَالِق",
+    "meaning": "The Creator"
+  },
+  {
+    "root": "الرَّزَّاق",
+    "meaning": "The Provider"
+  },
+  {
+    "root": "التَّوَّاب",
+    "meaning": "The Accepter of repentance"
+  },
+  {
+    "root": "الوَدُود",
+    "meaning": "The Most Loving"
+  },
+  {
+    "root": "الصَّبُور",
+    "meaning": "The Most Patient"
+  },
+  {
+    "root": "النُّور",
+    "meaning": "The Light (divine name)"
+  },
+  {
+    "root": "الحَيّ",
+    "meaning": "The Ever-Living"
+  },
+  {
+    "root": "القَيُّوم",
+    "meaning": "The Self-Subsisting"
+  },
+  {
+    "root": "الأَوَّل",
+    "meaning": "The First"
+  },
+  {
+    "root": "الآخِر",
+    "meaning": "The Last"
+  },
+  {
+    "root": "الظَّاهِر",
+    "meaning": "The Manifest"
+  },
+  {
+    "root": "البَاطِن",
+    "meaning": "The Hidden"
+  },
+  {
+    "root": "أُمَّة",
+    "meaning": "Community / Nation"
+  },
+  {
+    "root": "عِلْم",
+    "meaning": "Knowledge / Science"
+  },
+  {
+    "root": "حَقّ",
+    "meaning": "Truth / Right"
+  },
+  {
+    "root": "خَيْر",
+    "meaning": "Good / Goodness"
+  },
+  {
+    "root": "شَرّ",
+    "meaning": "Evil / Wickedness"
+  },
+  {
+    "root": "فِتْنَة",
+    "meaning": "Trial / Discord"
+  },
+  {
+    "root": "بَلَاء",
+    "meaning": "Trial / Calamity"
+  },
+  {
+    "root": "نِعْمَة",
+    "meaning": "Blessing / Grace"
+  },
+  {
+    "root": "إِنسَان",
+    "meaning": "Human being"
+  },
+  {
+    "root": "رُوح",
+    "meaning": "Soul / Spirit"
+  },
+  {
+    "root": "عَقْل",
+    "meaning": "Intelligence / Reason"
+  },
+  {
+    "root": "قَلْب",
+    "meaning": "Heart"
+  },
+  {
+    "root": "نَفْس",
+    "meaning": "Soul / Self"
+  }
+]
