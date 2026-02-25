@@ -393,7 +393,7 @@
 </div>
 
 <div class="header">
-  <div class="app-title">Flashcard Coranique <span id="app-version" style="font-family:Cinzel,serif;font-size:9px;opacity:0.5;letter-spacing:2px">V2.8</span></div>
+  <div class="app-title">Flashcard Coranique <span id="app-version" style="font-family:Cinzel,serif;font-size:13px;font-weight:700;opacity:0.7;letter-spacing:2px">V2.9</span></div>
   <div class="language-selector">
     <label>Langue</label>
     <select id="language-select" onchange="loadLanguage()">
@@ -422,7 +422,7 @@
 
   <canvas id="clock-canvas" width="400" height="400" onclick="locatePrayer()"></canvas>
 
-  <span id="words-learned" title="Mots appris">0</span>
+  <span id="words-learned" title="Mots appris — appui long pour effacer" onclick="handleLearnedBadgeClick()" style="cursor:pointer">0</span>
   <div class="progress-info" id="progress-info">—/—</div>
 
   <button class="button-circle" id="prev-btn"    title="Précédent"          onclick="prevCard()"       disabled>⬅</button>
@@ -871,14 +871,14 @@ async function loadLanguage() {
       const res = await fetch(GITHUB_BASE + LANG_FILES[lang]);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       cards = (await res.json()).sort(() => Math.random() - 0.5);
-      showCard(); disableButtons(false);
+      showCard(); disableButtons(false); loadProgress();
       toast(`☁️ ${cards.length} mots chargés depuis GitHub`);
       return;
     } catch(e) { toast('⚠️ GitHub inaccessible — données locales'); }
   }
   cards = WORDS[lang] ? [...WORDS[lang]].sort(() => Math.random()-0.5) : [];
   if (!cards.length) { toast('❌ Aucune donnée'); return; }
-  showCard(); disableButtons(false);
+  showCard(); disableButtons(false); loadProgress();
   toast(`📦 ${cards.length} mots (local)`);
 }
 
@@ -922,7 +922,7 @@ function handleCardClick(e) {
   const rect = e.currentTarget.getBoundingClientRect();
   if ((e.clientY - rect.top) < rect.height / 2) {
     if (!learnedCards.has(currentIndex)) {
-      learnedCards.add(currentIndex); learnedCount++; updateProgress(); toast('✅ Mot appris !');
+      learnedCards.add(currentIndex); learnedCount++; updateProgress(); toast('✅ Mot appris !'); saveProgress();
     } else { toast('Déjà marqué comme appris'); }
   } else { toast('⏭ Mot passé'); }
   nextCard();
@@ -1034,6 +1034,7 @@ function markLearned() {
   if (!cards.length) return;
   if (!learnedCards.has(currentIndex)) {
     learnedCards.add(currentIndex); learnedCount++; updateProgress(); toast('✅ Mot appris !');
+    saveProgress();
   } else { toast('Déjà marqué'); }
   nextCard();
 }
@@ -1041,6 +1042,59 @@ function markForReview() {
   if (!cards.length) return;
   if (learnedCards.has(currentIndex)) { learnedCards.delete(currentIndex); learnedCount--; updateProgress(); }
   toast('🔄 Remis en révision'); nextCard();
+  saveProgress();
+}
+
+// ── Sauvegarde locale ──
+function handleLearnedBadgeClick() {
+  if (learnedCount === 0) return;
+  if (confirm('Effacer la progression (' + learnedCount + ' mots appris) ?')) {
+    resetProgress();
+  }
+}
+
+function saveProgress() {
+  if (!currentLanguage) return;
+  const data = {
+    learnedCount,
+    learnedRoots: [...learnedCards].map(i => cards[i]?.root).filter(Boolean),
+    currentIndex,
+    savedAt: new Date().toISOString()
+  };
+  localStorage.setItem('fc_progress_' + currentLanguage, JSON.stringify(data));
+}
+
+function loadProgress() {
+  if (!currentLanguage || !cards.length) return;
+  try {
+    const raw = localStorage.getItem('fc_progress_' + currentLanguage);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    // Retrouver les indices des mots appris par leur racine
+    learnedCards.clear(); learnedCount = 0;
+    cards.forEach((card, i) => {
+      if (data.learnedRoots?.includes(card.root)) {
+        learnedCards.add(i); learnedCount++;
+      }
+    });
+    // Reprendre à l'index sauvegardé
+    if (data.currentIndex && data.currentIndex < cards.length) {
+      currentIndex = data.currentIndex;
+    }
+    updateProgress();
+    if (learnedCount > 0) {
+      const date = new Date(data.savedAt).toLocaleDateString('fr-FR');
+      toast('💾 Progression restaurée : ' + learnedCount + ' mots appris (' + date + ')');
+    }
+  } catch(e) {}
+}
+
+function resetProgress() {
+  if (!currentLanguage) return;
+  localStorage.removeItem('fc_progress_' + currentLanguage);
+  learnedCards.clear(); learnedCount = 0; currentIndex = 0;
+  updateProgress(); showCard();
+  toast('🗑️ Progression effacée');
 }
 
 // ══════════════════════════════════════════
