@@ -158,8 +158,8 @@
   .flashcard-container {
     position: relative;
     /* Taille adaptative pour petits écrans */
-    width: min(420px, 90vw);
-    height: min(420px, 90vw);
+    width: min(500px, 95vw);
+    height: min(500px, 95vw);
   }
   .ring {
     position: absolute; top: 50%; left: 50%;
@@ -176,8 +176,8 @@
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     /* Taille responsive */
-    width: min(200px, 47vw);
-    height: min(200px, 47vw);
+    width: min(240px, 52vw);
+    height: min(240px, 52vw);
     border-radius: 50%;
     background: var(--card-bg); border: 3px solid var(--gold);
     display: flex; flex-direction: column;
@@ -197,11 +197,11 @@
     box-shadow: 0 0 0 4px rgba(201,168,76,0.12), var(--shadow);
   }
   #card-word {
-    font-family: 'Amiri', serif; font-size: clamp(22px, 6vw, 30px);
+    font-family: 'Amiri', serif; font-size: clamp(30px, 9vw, 42px);
     font-weight: 700; color: var(--accent); line-height: 1.2;
   }
   #card-hint {
-    font-size: clamp(8px, 2vw, 9px); letter-spacing: 1.5px;
+    font-size: clamp(9px, 2.5vw, 11px); letter-spacing: 1.5px;
     color: #888; margin-top: 8px; text-transform: uppercase;
   }
   .flashcard.revealed-top::before {
@@ -220,8 +220,8 @@
     display: none;
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: min(200px, 47vw) !important;
-    height: min(200px, 47vw) !important;
+    width: min(240px, 52vw) !important;
+    height: min(240px, 52vw) !important;
     border-radius: 50%;
     border: 3px solid var(--gold);
     box-shadow: 0 0 0 6px rgba(201,168,76,0.12), var(--shadow);
@@ -250,8 +250,8 @@
   /* ══ BOUTONS CIRCULAIRES ══ */
   .button-circle {
     position: absolute;
-    width: min(52px, 12vw);
-    height: min(52px, 12vw);
+    width: min(58px, 13vw);
+    height: min(58px, 13vw);
     border-radius: 50%;
     background: var(--btn-bg); color: var(--gold);
     border: 2px solid rgba(201,168,76,0.35);
@@ -393,7 +393,7 @@
 </div>
 
 <div class="header">
-  <div class="app-title">Flashcard Coranique <span id="app-version" style="font-family:Cinzel,serif;font-size:9px;opacity:0.5;letter-spacing:2px">V2.6</span></div>
+  <div class="app-title">Flashcard Coranique <span id="app-version" style="font-family:Cinzel,serif;font-size:9px;opacity:0.5;letter-spacing:2px">V2.8</span></div>
   <div class="language-selector">
     <label>Langue</label>
     <select id="language-select" onchange="loadLanguage()">
@@ -442,7 +442,7 @@
   <div class="prayer-countdown" id="prayer-countdown"></div>
 </div>
 
-<div id="swipe-hint">← glisser pour naviguer →</div>
+<div id="swipe-hint" id="nav-hint">← glisser / touches ← → pour naviguer →</div>
 <div id="toast"></div>
 
 <script>
@@ -520,6 +520,12 @@ function isIOS() {
 function isAndroid() {
   return /android/i.test(navigator.userAgent);
 }
+function isChrome() {
+  return /chrome/i.test(navigator.userAgent) && !/edg|opr/i.test(navigator.userAgent);
+}
+function isDesktop() {
+  return !isIOS() && !isAndroid();
+}
 function isInStandaloneMode() {
   return navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 }
@@ -538,7 +544,9 @@ window.addEventListener('beforeinstallprompt', e => {
   deferredPrompt = e;
   if (!isInStandaloneMode() && !localStorage.getItem('installDismissed')) {
     const desc = document.getElementById('ib-desc');
-    desc.innerHTML = 'Ajoutez l\'app à votre écran d\'accueil';
+    desc.innerHTML = isDesktop()
+      ? 'Installez l\'app sur votre bureau pour y accéder rapidement'
+      : 'Ajoutez l\'app à votre écran d\'accueil';
     const btn = document.createElement('button');
     btn.textContent = '📲 Installer';
     btn.style.cssText = 'display:block;margin-top:8px;background:var(--gold);color:#0d1b2a;border:none;border-radius:20px;padding:6px 16px;font-family:Cinzel,serif;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:1px;';
@@ -877,7 +885,7 @@ async function loadLanguage() {
 function resetApp() {
   cards = []; currentIndex = 0; revealed = false;
   learnedCount = 0; currentLanguage = ''; learnedCards.clear();
-  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:clamp(22px,6vw,30px);font-weight:700;color:#7b3f00;line-height:1.2';
+  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:clamp(30px,9vw,42px);font-weight:700;color:#7b3f00;line-height:1.2';
   cardWordEl.textContent = 'بِسْمِ';
   cardHintEl.textContent = 'Choisir une langue';
   disableButtons(true); updateProgress();
@@ -895,7 +903,7 @@ function showCard() {
   if (!cards.length) return;
   revealed = false;
   document.getElementById('flashcard').classList.remove('revealed-top');
-  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:clamp(22px,6vw,30px);font-weight:700;color:#7b3f00;line-height:1.2';
+  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:clamp(30px,9vw,42px);font-weight:700;color:#7b3f00;line-height:1.2';
   cardWordEl.textContent = cards[currentIndex].root || '?';
   cardHintEl.textContent = '👆 Toucher pour révéler';
   updateProgress();
@@ -905,7 +913,7 @@ function handleCardClick(e) {
   if (!cards.length) return;
   if (!revealed) {
     revealed = true;
-    cardWordEl.style.cssText = 'font-family:Cinzel,serif;font-size:clamp(11px,3vw,13px);font-weight:600;color:#1a2a3a;line-height:1.4';
+    cardWordEl.style.cssText = 'font-family:Cinzel,serif;font-size:clamp(13px,3.5vw,16px);font-weight:600;color:#1a2a3a;line-height:1.4';
     cardWordEl.textContent = cards[currentIndex].meaning || '—';
     cardHintEl.textContent = '⬆ Appris  |  ⬇ Passer';
     document.getElementById('flashcard').classList.add('revealed-top');
@@ -956,8 +964,10 @@ function playSound() {
       voices.find(v => v.lang.startsWith('ar'));
     if (arabicVoice) utterance.voice = arabicVoice;
 
-    // Android Chrome préfère 'ar', iOS préfère 'ar-SA'
-    utterance.lang = isAndroid() ? 'ar' : 'ar-SA';
+    // Adapter la langue selon la plateforme
+    if (isIOS()) utterance.lang = 'ar-SA';
+    else if (isAndroid()) utterance.lang = 'ar';
+    else utterance.lang = 'ar-SA'; // Chrome desktop
     utterance.rate   = 0.75;
     utterance.pitch  = 1;
     utterance.volume = 1;
