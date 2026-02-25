@@ -724,8 +724,15 @@ function expandButtons() {
   document.getElementById('ring-hint').classList.add('hidden');
 }
 
-// Clic sur le ring (zone annulaire)
+// Stopper la propagation sur tous les boutons
+buttons.forEach(btn => {
+  btn.addEventListener('click', e => e.stopPropagation());
+  btn.addEventListener('touchend', e => e.stopPropagation());
+});
+
+// Clic sur le ring uniquement (pas sur bouton ni carte)
 document.getElementById('fc-container').addEventListener('click', e => {
+  if (e.target.closest('.button-circle') || e.target.closest('.flashcard') || e.target.id === 'clock-canvas') return;
   const card = document.getElementById('flashcard');
   const rect  = card.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
