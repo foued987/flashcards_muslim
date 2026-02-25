@@ -893,38 +893,62 @@ function prevCard() {
   if (cards.length) { currentIndex = (currentIndex-1+cards.length)%cards.length; showCard(); }
 }
 
-// ── Audio : Web Speech API ──
+// ── Audio : Web Speech API (version iOS robuste) ──
 function playSound() {
   if (!cards.length) return;
   if (!window.speechSynthesis) { toast('⚠️ Synthèse vocale non supportée'); return; }
 
-  // Annule toute lecture en cours
+  const word = cards[currentIndex].root;
+  const btn  = document.getElementById('sound-btn');
+
   window.speechSynthesis.cancel();
 
-  const word = cards[currentIndex].root;
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.lang = 'ar-SA';  // Arabe Saoudien
-  utterance.rate = 0.8;       // Un peu plus lent pour bien entendre
-  utterance.pitch = 1;
-  utterance.volume = 1;
+  setTimeout(() => {
+    const utterance = new SpeechSynthesisUtterance(word);
 
-  // Feedback visuel pendant la lecture
-  const btn = document.getElementById('sound-btn');
-  btn.textContent = '🔈';
-  btn.style.color = '#e74c3c';
-  utterance.onend = () => {
-    btn.textContent = '🔊';
-    btn.style.color = '';
-  };
-  utterance.onerror = () => {
-    btn.textContent = '🔊';
-    btn.style.color = '';
-    toast('⚠️ Voix arabe non disponible sur cet appareil');
-  };
+    // Chercher une voix arabe disponible
+    const voices = window.speechSynthesis.getVoices();
+    const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+    if (arabicVoice) utterance.voice = arabicVoice;
 
-  window.speechSynthesis.speak(utterance);
-  toast('🔊 ' + word);
+    utterance.lang   = 'ar-SA';
+    utterance.rate   = 0.75;
+    utterance.pitch  = 1;
+    utterance.volume = 1;
+
+    btn.textContent = '🔈';
+    btn.style.color = '#e74c3c';
+
+    utterance.onend = () => { btn.textContent = '🔊'; btn.style.color = ''; };
+    utterance.onerror = (e) => {
+      btn.textContent = '🔊'; btn.style.color = '';
+      if (e.error === 'language-unavailable' || e.error === 'voice-unavailable') {
+        const fallback = new SpeechSynthesisUtterance(word);
+        fallback.rate = 0.75;
+        window.speechSynthesis.speak(fallback);
+        toast('⚠️ Voix arabe absente — voix par défaut');
+      } else {
+        toast('⚠️ Erreur : ' + (e.error || 'inconnue'));
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
+
+    // iOS workaround : relancer si bloqué
+    setTimeout(() => {
+      if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    }, 250);
+
+    toast('🔊 ' + word);
+  }, 50);
 }
+
+// Précharger les voix (Safari les charge en lazy)
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
 function startRecording() {
   navigator.mediaDevices.getUserMedia({audio:true})
     .then(stream => {
