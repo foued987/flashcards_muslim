@@ -10,6 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Flashcard">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Flashcard">
+<!-- Android Chrome couleur barre de statut -->
+<meta name="theme-color" content="#0d1b2a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0d1b2a" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d1b2a">
 <meta name="description" content="Application de flashcards pour apprendre les mots coraniques">
 
@@ -383,13 +387,13 @@
   <div class="ib-icon">🕌</div>
   <div class="ib-text">
     <div class="ib-title">Installer l'application</div>
-    <div class="ib-desc">Touchez <strong style="color:var(--gold)">⎵ Partager</strong> puis <strong style="color:var(--gold)">Sur l'écran d'accueil</strong></div>
+    <div class="ib-desc" id="ib-desc">Touchez <strong style="color:var(--gold)">⎵ Partager</strong> puis <strong style="color:var(--gold)">Sur l'écran d'accueil</strong></div>
   </div>
   <div class="ib-close" onclick="dismissInstall()">✕</div>
 </div>
 
 <div class="header">
-  <div class="app-title">Flashcard Coranique <span id="app-version" style="font-size:9px;opacity:0.5;letter-spacing:2px">V2.5</span></div>
+  <div class="app-title">Flashcard Coranique <span id="app-version" style="font-family:Cinzel,serif;font-size:9px;opacity:0.5;letter-spacing:2px">V2.6</span></div>
   <div class="language-selector">
     <label>Langue</label>
     <select id="language-select" onchange="loadLanguage()">
@@ -457,6 +461,12 @@
     orientation: "portrait",
     icons: [
       {
+        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%230d1b2a'/%3E%3Ccircle cx='96' cy='96' r='76' fill='none' stroke='%23c9a84c' stroke-width='5'/%3E%3Ctext x='96' y='126' font-size='90' text-anchor='middle' fill='%23c9a84c' font-family='serif'%3E%D8%A8%3C/text%3E%3C/svg%3E",
+        sizes: "192x192",
+        type: "image/svg+xml",
+        purpose: "any"
+      },
+      {
         src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230d1b2a'/%3E%3Ccircle cx='256' cy='256' r='200' fill='none' stroke='%23c9a84c' stroke-width='12'/%3E%3Ctext x='256' y='330' font-size='220' text-anchor='middle' fill='%23c9a84c' font-family='serif'%3E%D8%A8%3C/text%3E%3C/svg%3E",
         sizes: "512x512",
         type: "image/svg+xml",
@@ -502,10 +512,13 @@ self.addEventListener('fetch', e => {
 }
 
 // ══════════════════════════════════════════
-//  BANDEAU INSTALL iOS
+//  BANDEAU INSTALL iOS + ANDROID
 // ══════════════════════════════════════════
 function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function isAndroid() {
+  return /android/i.test(navigator.userAgent);
 }
 function isInStandaloneMode() {
   return navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
@@ -517,6 +530,33 @@ function dismissInstall() {
   setTimeout(() => b.style.display = 'none', 300);
   localStorage.setItem('installDismissed', '1');
 }
+
+// Android : intercepter l'événement natif d'installation Chrome
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!isInStandaloneMode() && !localStorage.getItem('installDismissed')) {
+    const desc = document.getElementById('ib-desc');
+    desc.innerHTML = 'Ajoutez l\'app à votre écran d\'accueil';
+    const btn = document.createElement('button');
+    btn.textContent = '📲 Installer';
+    btn.style.cssText = 'display:block;margin-top:8px;background:var(--gold);color:#0d1b2a;border:none;border-radius:20px;padding:6px 16px;font-family:Cinzel,serif;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:1px;';
+    btn.onclick = () => {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => { deferredPrompt = null; dismissInstall(); });
+    };
+    desc.appendChild(btn);
+    setTimeout(() => { document.getElementById('install-banner').style.display = 'flex'; }, 2000);
+  }
+});
+
+// Android : confirmation après installation
+window.addEventListener('appinstalled', () => {
+  toast('✅ Application installée avec succès !');
+  dismissInstall();
+});
+
 window.addEventListener('load', () => {
   if (isIOS() && !isInStandaloneMode() && !localStorage.getItem('installDismissed')) {
     setTimeout(() => {
@@ -906,12 +946,18 @@ function playSound() {
   setTimeout(() => {
     const utterance = new SpeechSynthesisUtterance(word);
 
-    // Chercher une voix arabe disponible
+    // Chercher la meilleure voix arabe disponible (iOS + Android)
     const voices = window.speechSynthesis.getVoices();
-    const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+    // Priorité : ar-SA > ar-EG > ar > toute voix arabe
+    const arabicVoice =
+      voices.find(v => v.lang === 'ar-SA') ||
+      voices.find(v => v.lang === 'ar-EG') ||
+      voices.find(v => v.lang === 'ar')    ||
+      voices.find(v => v.lang.startsWith('ar'));
     if (arabicVoice) utterance.voice = arabicVoice;
 
-    utterance.lang   = 'ar-SA';
+    // Android Chrome préfère 'ar', iOS préfère 'ar-SA'
+    utterance.lang = isAndroid() ? 'ar' : 'ar-SA';
     utterance.rate   = 0.75;
     utterance.pitch  = 1;
     utterance.volume = 1;
