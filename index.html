@@ -857,7 +857,7 @@ function showCard() {
 function handleCardClick(e) {
   if (!cards.length) return;
   if (!revealed) {
-    revealed = true; retractButtons();
+    revealed = true;
     cardWordEl.style.cssText = 'font-family:Cinzel,serif;font-size:clamp(11px,3vw,13px);font-weight:600;color:#1a2a3a;line-height:1.4';
     cardWordEl.textContent = cards[currentIndex].meaning || '—';
     cardHintEl.textContent = '⬆ Appris  |  ⬇ Passer';
@@ -886,8 +886,38 @@ function prevCard() {
   if (cards.length) { currentIndex = (currentIndex-1+cards.length)%cards.length; showCard(); }
 }
 
-// ── Audio ──
-function playSound() { toast('🔊 Ajoutez vos fichiers audio dans audio/{lang}/'); }
+// ── Audio : Web Speech API ──
+function playSound() {
+  if (!cards.length) return;
+  if (!window.speechSynthesis) { toast('⚠️ Synthèse vocale non supportée'); return; }
+
+  // Annule toute lecture en cours
+  window.speechSynthesis.cancel();
+
+  const word = cards[currentIndex].root;
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = 'ar-SA';  // Arabe Saoudien
+  utterance.rate = 0.8;       // Un peu plus lent pour bien entendre
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  // Feedback visuel pendant la lecture
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = '🔈';
+  btn.style.color = '#e74c3c';
+  utterance.onend = () => {
+    btn.textContent = '🔊';
+    btn.style.color = '';
+  };
+  utterance.onerror = () => {
+    btn.textContent = '🔊';
+    btn.style.color = '';
+    toast('⚠️ Voix arabe non disponible sur cet appareil');
+  };
+
+  window.speechSynthesis.speak(utterance);
+  toast('🔊 ' + word);
+}
 function startRecording() {
   navigator.mediaDevices.getUserMedia({audio:true})
     .then(stream => {
