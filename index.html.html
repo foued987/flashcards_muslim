@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Flashcard Coranique</title>
+
+<!-- ══ PWA / iOS META ══ -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flashcard">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="description" content="Application de flashcards pour apprendre les mots coraniques">
+
+<!-- ══ MANIFEST (inline via JS — généré dynamiquement) ══ -->
+<link id="manifest-link" rel="manifest">
+
+<!-- ══ APPLE TOUCH ICON (SVG inline encodé) ══ -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230d1b2a'/%3E%3Ccircle cx='90' cy='90' r='70' fill='none' stroke='%23c9a84c' stroke-width='4'/%3E%3Ctext x='90' y='115' font-size='75' text-anchor='middle' fill='%23c9a84c' font-family='serif'%3E%D8%A8%3C/text%3E%3C/svg%3E">
+
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #1a2a3a;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --card-bg: #f5f0e8;
+    --btn-bg: #1a2a3a;
+    --btn-hover: #2e4460;
+    --accent: #7b3f00;
+    --shadow: 0 8px 32px rgba(26,42,58,0.25);
+    /* Safe area pour iPhone X+ */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html {
+    height: -webkit-fill-available;
+    /* Évite le rebond de scroll sur iOS */
+    overscroll-behavior: none;
+  }
+  body {
+    font-family: 'Cinzel', serif;
+    background: radial-gradient(ellipse at 30% 20%, #2c1810 0%, #0d1b2a 60%, #0a1628 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    gap: 20px;
+    padding-top: calc(var(--safe-top) + 12px);
+    padding-bottom: calc(var(--safe-bottom) + 12px);
+    /* Empêche le zoom accidentel sur double-tap */
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+  }
+
+  /* ══ BANDEAU INSTALL (iOS) ══ */
+  #install-banner {
+    display: none;
+    position: fixed;
+    bottom: calc(var(--safe-bottom) + 10px);
+    left: 50%; transform: translateX(-50%);
+    background: rgba(26,42,58,0.97);
+    border: 1px solid rgba(201,168,76,0.5);
+    border-radius: 16px;
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px;
+    z-index: 500;
+    max-width: 340px; width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  #install-banner .ib-icon { font-size: 28px; }
+  #install-banner .ib-text { flex: 1; }
+  #install-banner .ib-title { font-size: 11px; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 3px; }
+  #install-banner .ib-desc  { font-size: 10px; color: rgba(232,213,163,0.7); letter-spacing: 0.5px; line-height: 1.4; }
+  #install-banner .ib-close {
+    color: rgba(201,168,76,0.5); font-size: 20px; cursor: pointer; padding: 4px; flex-shrink: 0;
+  }
+  #install-banner .ib-close:active { color: var(--gold); }
+
+  /* ══ HEADER ══ */
+  .header { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .app-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .language-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 30px;
+    padding: 8px 16px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .language-selector label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-light);
+    text-transform: uppercase;
+  }
+  #language-select {
+    background: transparent;
+    border: none;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    /* iOS fix: pas d'apparence native */
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23c9a84c'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+    /* Minimum 44px de hauteur pour facilité tactile */
+    min-height: 44px;
+  }
+  #language-select option { background: #1a2a3a; color: #fff; }
+
+  /* ══ GitHub status ══ */
+  .github-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; letter-spacing: 1.5px;
+    color: rgba(201,168,76,0.5); text-transform: uppercase;
+    cursor: pointer; min-height: 44px;
+    padding: 0 8px;
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #555; flex-shrink: 0;
+    transition: background 0.4s;
+  }
+  .status-dot.checking { background: #f39c12; animation: pulse 0.8s infinite alternate; }
+  .status-dot.ok       { background: #27ae60; }
+  .status-dot.error    { background: #e74c3c; }
+  @keyframes pulse { from { opacity: 1; } to { opacity: 0.3; } }
+
+  /* ══ FLASHCARD CONTAINER ══ */
+  .flashcard-container {
+    position: relative;
+    /* Taille adaptative pour petits écrans */
+    width: min(420px, 90vw);
+    height: min(420px, 90vw);
+  }
+  .ring {
+    position: absolute; top: 50%; left: 50%;
+    width: 81%;
+    height: 81%;
+    border-radius: 50%;
+    border: 1px dashed rgba(201,168,76,0.15);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  /* ══ CARTE ══ */
+  .flashcard {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    /* Taille responsive */
+    width: min(200px, 47vw);
+    height: min(200px, 47vw);
+    border-radius: 50%;
+    background: var(--card-bg); border: 3px solid var(--gold);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 16px;
+    cursor: pointer;
+    user-select: none; -webkit-user-select: none;
+    box-shadow: 0 0 0 6px rgba(201,168,76,0.12), var(--shadow);
+    z-index: 5;
+    /* Transition plus douce sur iOS */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* Active state pour iPhone (remplace :hover) */
+    -webkit-tap-highlight-color: transparent;
+  }
+  .flashcard:active {
+    transform: translate(-50%, -50%) scale(0.97);
+    box-shadow: 0 0 0 4px rgba(201,168,76,0.12), var(--shadow);
+  }
+  #card-word {
+    font-family: 'Amiri', serif; font-size: clamp(22px, 6vw, 30px);
+    font-weight: 700; color: var(--accent); line-height: 1.2;
+  }
+  #card-hint {
+    font-size: clamp(8px, 2vw, 9px); letter-spacing: 1.5px;
+    color: #888; margin-top: 8px; text-transform: uppercase;
+  }
+  .flashcard.revealed-top::before {
+    content: '✓'; position: absolute; top: 18px; left: 50%;
+    transform: translateX(-50%); font-size: 11px;
+    color: #27ae60; opacity: 0.6; pointer-events: none;
+  }
+  .flashcard.revealed-top::after {
+    content: '→'; position: absolute; bottom: 18px; left: 50%;
+    transform: translateX(-50%); font-size: 11px;
+    color: #e67e22; opacity: 0.6; pointer-events: none;
+  }
+
+  /* ══ CANVAS HORLOGE ══ */
+  #clock-canvas {
+    display: none;
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(200px, 47vw) !important;
+    height: min(200px, 47vw) !important;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 0 6px rgba(201,168,76,0.12), var(--shadow);
+    z-index: 5; cursor: pointer;
+  }
+
+  /* ══ BADGE & PROGRESS ══ */
+  #words-learned {
+    position: absolute; top: 50%; left: 50%;
+    /* Décalage proportionnel */
+    transform: translate(calc(min(100px,23vw) + 4px), calc(-1 * min(100px,23vw) - 16px));
+    background: #c0392b; color: white;
+    border-radius: 50%; width: 32px; height: 32px;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 10; border: 2px solid #fff;
+  }
+  .progress-info {
+    position: absolute; bottom: 10px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px; letter-spacing: 2px;
+    color: rgba(201,168,76,0.6); text-transform: uppercase;
+  }
+
+  /* ══ BOUTONS CIRCULAIRES ══ */
+  .button-circle {
+    position: absolute;
+    width: min(52px, 12vw);
+    height: min(52px, 12vw);
+    border-radius: 50%;
+    background: var(--btn-bg); color: var(--gold);
+    border: 2px solid rgba(201,168,76,0.35);
+    cursor: pointer;
+    font-size: clamp(14px, 4vw, 18px);
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    /* iOS: transitions douces */
+    transition: background 0.2s, border-color 0.2s,
+                transform 0.45s cubic-bezier(.34,1.2,.64,1),
+                opacity 0.35s ease;
+    top: 50%; left: 50%;
+    -webkit-tap-highlight-color: transparent;
+    /* Assure un zone de tap suffisante même si visuellement plus petit */
+    touch-action: manipulation;
+  }
+  .button-circle:active:not(:disabled) {
+    background: var(--btn-hover); border-color: var(--gold);
+    transform: translate(calc(var(--bx, 0) * 1px), calc(var(--by, 0) * 1px)) scale(0.92);
+  }
+  .button-circle:disabled { opacity: 0.3; cursor: not-allowed; }
+  .button-circle.retracted {
+    transform: translate(-26px, -26px) scale(0) !important;
+    opacity: 0 !important; pointer-events: none !important;
+  }
+  /* Tooltip desktop uniquement */
+  @media (hover: hover) {
+    .button-circle:hover:not(:disabled) {
+      background: var(--btn-hover); border-color: var(--gold);
+    }
+    .button-circle[title]:hover::after {
+      content: attr(title);
+      position: absolute; bottom: 58px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(26,42,58,0.95); color: var(--gold-light);
+      padding: 4px 10px; border-radius: 6px;
+      white-space: nowrap; font-size: 10px; letter-spacing: 1px;
+      pointer-events: none; z-index: 20;
+      border: 1px solid rgba(201,168,76,0.3);
+    }
+  }
+  #clock-btn.active {
+    background: rgba(201,168,76,0.2);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ══ RING HINT ══ */
+  .ring-hint {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, calc(-50% + min(155px, 37vw)));
+    font-size: 9px; letter-spacing: 2px;
+    color: rgba(201,168,76,0.4); text-transform: uppercase;
+    pointer-events: none; transition: opacity 0.4s; white-space: nowrap;
+  }
+  .ring-hint.hidden { opacity: 0; }
+
+  /* ══ PRAYER BAR ══ */
+  #prayer-bar {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .prayer-location {
+    font-size: 9px; letter-spacing: 2px;
+    color: rgba(201,168,76,0.45); text-transform: uppercase;
+  }
+  .prayer-pills {
+    display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    max-width: min(420px, 90vw);
+  }
+  .prayer-pill {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 20px; padding: 6px 12px;
+    font-family: 'Cinzel', serif; font-size: 10px;
+    color: rgba(232,213,163,0.6); transition: all 0.3s;
+    /* Tap target minimum */
+    min-height: 36px;
+  }
+  .prayer-pill.next-p {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+  }
+  .prayer-pill .ppip { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .prayer-countdown {
+    font-size: 9px; letter-spacing: 2px;
+    color: rgba(201,168,76,0.45); text-transform: uppercase;
+  }
+
+  /* ══ SWIPE INDICATOR (mobile) ══ */
+  #swipe-hint {
+    position: fixed; bottom: calc(var(--safe-bottom) + 60px); left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px; letter-spacing: 2px;
+    color: rgba(201,168,76,0.3); text-transform: uppercase;
+    pointer-events: none; opacity: 1; transition: opacity 1s;
+  }
+  #swipe-hint.gone { opacity: 0; }
+
+  /* ══ TOAST ══ */
+  #toast {
+    position: fixed;
+    bottom: calc(var(--safe-bottom) + 30px);
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(26,42,58,0.97); color: var(--gold-light);
+    padding: 10px 22px; border-radius: 30px;
+    font-size: 12px; letter-spacing: 1.5px;
+    border: 1px solid rgba(201,168,76,0.4);
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+    z-index: 200; pointer-events: none;
+    max-width: 80vw; text-align: center;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ══ MEDIA QUERIES PHONE ══ */
+  @media (max-width: 400px) {
+    body { gap: 14px; }
+    .app-title { font-size: 11px; letter-spacing: 3px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ BANDEAU INSTALLATION iOS ══ -->
+<div id="install-banner" style="display:none">
+  <div class="ib-icon">🕌</div>
+  <div class="ib-text">
+    <div class="ib-title">Installer l'application</div>
+    <div class="ib-desc">Touchez <strong style="color:var(--gold)">⎵ Partager</strong> puis <strong style="color:var(--gold)">Sur l'écran d'accueil</strong></div>
+  </div>
+  <div class="ib-close" onclick="dismissInstall()">✕</div>
+</div>
+
+<div class="header">
+  <div class="app-title">Flashcard Coranique</div>
+  <div class="language-selector">
+    <label>Langue</label>
+    <select id="language-select" onchange="loadLanguage()">
+      <option value="">— Choisir —</option>
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+      <option value="ar">العربية</option>
+      <option value="es">Español</option>
+      <option value="de">Deutsch</option>
+    </select>
+  </div>
+  <div class="github-status" onclick="testGithub()">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-label">GitHub — non testé</span>
+  </div>
+</div>
+
+<div class="flashcard-container" id="fc-container">
+  <div class="ring"></div>
+  <div class="ring-hint hidden" id="ring-hint">Toucher ici pour les actions</div>
+
+  <div class="flashcard" id="flashcard" onclick="handleCardClick(event)">
+    <div id="card-word">بِسْمِ</div>
+    <div id="card-hint">Choisir une langue</div>
+  </div>
+
+  <canvas id="clock-canvas" width="400" height="400" onclick="locatePrayer()"></canvas>
+
+  <span id="words-learned" title="Mots appris">0</span>
+  <div class="progress-info" id="progress-info">—/—</div>
+
+  <button class="button-circle" id="prev-btn"    title="Précédent"          onclick="prevCard()"       disabled>⬅</button>
+  <button class="button-circle" id="next-btn"    title="Suivant"            onclick="nextCard()"       disabled>➡</button>
+  <button class="button-circle" id="sound-btn"   title="Écouter"            onclick="playSound()"      disabled>🔊</button>
+  <button class="button-circle" id="record-btn"  title="Enregistrer"        onclick="startRecording()" disabled>🎤</button>
+  <button class="button-circle" id="clock-btn"   title="Horaires de prière" onclick="toggleClock()">🕌</button>
+  <button class="button-circle" id="stop-btn"    title="Arrêter"            onclick="stopRecording()"  disabled>⏹</button>
+  <button class="button-circle" id="play-btn"    title="Écouter enreg."     onclick="playRecording()"  disabled>▶</button>
+  <button class="button-circle" id="learned-btn" title="Mot appris"         onclick="markLearned()"    disabled>✓</button>
+  <button class="button-circle" id="review-btn"  title="À revoir"           onclick="markForReview()"  disabled>✗</button>
+</div>
+
+<div id="prayer-bar">
+  <div class="prayer-location" id="prayer-location">📍 Localisation…</div>
+  <div class="prayer-pills" id="prayer-pills"></div>
+  <div class="prayer-countdown" id="prayer-countdown"></div>
+</div>
+
+<div id="swipe-hint">← glisser pour naviguer →</div>
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  PWA : MANIFEST (généré en JS pour fichier unique)
+// ══════════════════════════════════════════
+(function() {
+  const manifest = {
+    name: "Flashcard Coranique",
+    short_name: "Flashcard",
+    description: "Apprenez le vocabulaire coranique avec des flashcards",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#0d1b2a",
+    theme_color: "#0d1b2a",
+    orientation: "portrait",
+    icons: [
+      {
+        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230d1b2a'/%3E%3Ccircle cx='256' cy='256' r='200' fill='none' stroke='%23c9a84c' stroke-width='12'/%3E%3Ctext x='256' y='330' font-size='220' text-anchor='middle' fill='%23c9a84c' font-family='serif'%3E%D8%A8%3C/text%3E%3C/svg%3E",
+        sizes: "512x512",
+        type: "image/svg+xml",
+        purpose: "any maskable"
+      }
+    ],
+    categories: ["education", "lifestyle"],
+    lang: "fr"
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  document.getElementById('manifest-link').href = URL.createObjectURL(blob);
+})();
+
+// ══════════════════════════════════════════
+//  SERVICE WORKER (inline → blob URL)
+// ══════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  const swCode = `
+const CACHE = 'flashcard-coranique-v1';
+const OFFLINE = [
+  './',
+  'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&display=swap'
+];
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(OFFLINE).catch(()=>{})));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch', e => {
+  if (e.request.url.includes('api.aladhan.com') || e.request.url.includes('nominatim')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('{}', {headers:{'Content-Type':'application/json'}})));
+    return;
+  }
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./'))));
+});
+`;
+  const swBlob = new Blob([swCode], {type:'application/javascript'});
+  const swURL  = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swURL).catch(()=>{});
+}
+
+// ══════════════════════════════════════════
+//  BANDEAU INSTALL iOS
+// ══════════════════════════════════════════
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function isInStandaloneMode() {
+  return navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+}
+function dismissInstall() {
+  const b = document.getElementById('install-banner');
+  b.style.transition = 'opacity 0.3s';
+  b.style.opacity = '0';
+  setTimeout(() => b.style.display = 'none', 300);
+  localStorage.setItem('installDismissed', '1');
+}
+window.addEventListener('load', () => {
+  if (isIOS() && !isInStandaloneMode() && !localStorage.getItem('installDismissed')) {
+    setTimeout(() => {
+      document.getElementById('install-banner').style.display = 'flex';
+    }, 3000);
+  }
+  // Masque le swipe hint après 4s
+  setTimeout(() => document.getElementById('swipe-hint')?.classList.add('gone'), 4000);
+});
+
+// ══════════════════════════════════════════
+//  DONNÉES DE SECOURS (fallback)
+// ══════════════════════════════════════════
+const WORDS = {
+  fr: [
+    {root:"بِسْمِ",meaning:"Au nom de"},{root:"اللَّه",meaning:"Allah (Dieu)"},
+    {root:"الرَّحْمَن",meaning:"Le Tout Miséricordieux"},{root:"الرَّحِيم",meaning:"Le Très Miséricordieux"},
+    {root:"رَبّ",meaning:"Seigneur / Maître"},{root:"عَالَمِين",meaning:"Les mondes / L'univers"},
+    {root:"يَوْم",meaning:"Jour"},{root:"دِين",meaning:"Religion / Jugement"},
+    {root:"إِيَّاك",meaning:"Toi seul"},{root:"نَعْبُد",meaning:"Nous adorons"},
+    {root:"نَسْتَعِين",meaning:"Nous implorons l'aide"},{root:"اهْدِنَا",meaning:"Guide-nous"},
+    {root:"صِرَاط",meaning:"Chemin / Voie"},{root:"مُسْتَقِيم",meaning:"Droit / Rectiligne"},
+    {root:"نُور",meaning:"Lumière"},{root:"حَمْد",meaning:"Louange / Gratitude"},
+    {root:"مَلِك",meaning:"Roi / Souverain"},{root:"قُلْ",meaning:"Dis !"},
+    {root:"هُوَ",meaning:"Lui / Il"},{root:"أَحَد",meaning:"Un / Unique"},
+    {root:"صَمَد",meaning:"L'Absolu / L'Éternel"},{root:"كُفُوًا",meaning:"Égal / Comparable"},
+    {root:"فَلَق",meaning:"L'aube / Lever du jour"},{root:"وَسْوَاس",meaning:"Chuchotement malin"},
+    {root:"نَاس",meaning:"Les hommes / L'humanité"},{root:"إِنسَان",meaning:"Être humain"},
+    {root:"عَلَق",meaning:"Embryon / Sang coagulé"},{root:"قَلَم",meaning:"Plume / Stylo"},
+    {root:"عِلْم",meaning:"Science / Connaissance"},{root:"عَدْل",meaning:"Justice / Équité"},
+    {root:"رَحْمَة",meaning:"Miséricorde / Compassion"},{root:"صَبْر",meaning:"Patience / Persévérance"},
+    {root:"شُكْر",meaning:"Gratitude / Reconnaissance"},{root:"تَوْبَة",meaning:"Repentir / Retour à Dieu"},
+    {root:"إِيمَان",meaning:"Foi / Croyance"},{root:"إِسْلَام",meaning:"Soumission à Dieu / Islam"},
+    {root:"صَلَاة",meaning:"Prière rituelle"},{root:"زَكَاة",meaning:"Aumône obligatoire"},
+    {root:"صِيَام",meaning:"Jeûne"},{root:"حَجّ",meaning:"Pèlerinage à La Mecque"},
+    {root:"جَنَّة",meaning:"Paradis / Jardin"},{root:"نَار",meaning:"Feu / Enfer"},
+    {root:"مَلَك",meaning:"Ange"},{root:"نَبِيّ",meaning:"Prophète"},
+    {root:"أُمَّة",meaning:"Communauté / Nation"},{root:"آيَة",meaning:"Verset / Signe"},
+    {root:"سُورَة",meaning:"Sourate / Chapitre"},{root:"حَقّ",meaning:"Vérité / Droit"},
+    {root:"خَيْر",meaning:"Bien / Bonté"},{root:"تَقْوَى",meaning:"Piété / Crainte de Dieu"}
+  ],
+  en: [
+    {root:"بِسْمِ",meaning:"In the name of"},{root:"اللَّه",meaning:"Allah (God)"},
+    {root:"الرَّحْمَن",meaning:"The Most Gracious"},{root:"الرَّحِيم",meaning:"The Most Merciful"},
+    {root:"رَبّ",meaning:"Lord / Sustainer"},{root:"عَالَمِين",meaning:"The worlds / All creation"},
+    {root:"يَوْم",meaning:"Day"},{root:"دِين",meaning:"Religion / Judgment"},
+    {root:"إِيَّاك",meaning:"You alone"},{root:"نَعْبُد",meaning:"We worship"},
+    {root:"نَسْتَعِين",meaning:"We seek help"},{root:"اهْدِنَا",meaning:"Guide us"},
+    {root:"صِرَاط",meaning:"Path / Way"},{root:"مُسْتَقِيم",meaning:"Straight / Upright"},
+    {root:"نُور",meaning:"Light"},{root:"حَمْد",meaning:"Praise / Gratitude"},
+    {root:"مَلِك",meaning:"King / Sovereign"},{root:"قُلْ",meaning:"Say!"},
+    {root:"هُوَ",meaning:"He / Him"},{root:"أَحَد",meaning:"One / Unique"},
+    {root:"صَمَد",meaning:"The Eternal / Self-Sufficient"},{root:"كُفُوًا",meaning:"Equal / Comparable"},
+    {root:"فَلَق",meaning:"Daybreak / Dawn"},{root:"وَسْوَاس",meaning:"Evil whispering"},
+    {root:"نَاس",meaning:"People / Mankind"},{root:"إِنسَان",meaning:"Human being"},
+    {root:"عَلَق",meaning:"Clinging clot / Embryo"},{root:"قَلَم",meaning:"Pen / Quill"},
+    {root:"عِلْم",meaning:"Knowledge / Science"},{root:"عَدْل",meaning:"Justice / Equity"},
+    {root:"رَحْمَة",meaning:"Mercy / Compassion"},{root:"صَبْر",meaning:"Patience / Perseverance"},
+    {root:"شُكْر",meaning:"Gratitude / Thankfulness"},{root:"تَوْبَة",meaning:"Repentance / Return to God"},
+    {root:"إِيمَان",meaning:"Faith / Belief"},{root:"إِسْلَام",meaning:"Submission to God / Islam"},
+    {root:"صَلَاة",meaning:"Ritual prayer"},{root:"زَكَاة",meaning:"Obligatory almsgiving"},
+    {root:"صِيَام",meaning:"Fasting"},{root:"حَجّ",meaning:"Pilgrimage to Mecca"},
+    {root:"جَنَّة",meaning:"Paradise / Garden"},{root:"نَار",meaning:"Fire / Hell"},
+    {root:"مَلَك",meaning:"Angel"},{root:"نَبِيّ",meaning:"Prophet"},
+    {root:"أُمَّة",meaning:"Community / Nation"},{root:"آيَة",meaning:"Verse / Sign"},
+    {root:"سُورَة",meaning:"Chapter of the Quran"},{root:"حَقّ",meaning:"Truth / Right"},
+    {root:"خَيْر",meaning:"Good / Goodness"},{root:"تَقْوَى",meaning:"God-consciousness / Piety"}
+  ],
+  ar: [
+    {root:"بِسْمِ",meaning:"ابتداءً باسم الله"},{root:"اللَّه",meaning:"اسم الذات الإلهية العلية"},
+    {root:"الرَّحْمَن",meaning:"واسع الرحمة لجميع الخلق"},{root:"الرَّحِيم",meaning:"خاص الرحمة بالمؤمنين"},
+    {root:"رَبّ",meaning:"المالك والمربي والسيد"},{root:"عَالَمِين",meaning:"جميع المخلوقات والأكوان"},
+    {root:"يَوْم",meaning:"الوقت من الفجر إلى الغروب"},{root:"دِين",meaning:"الجزاء والحساب / المنهج"},
+    {root:"إِيَّاك",meaning:"ضمير نصب للمخاطب وحده"},{root:"نَعْبُد",meaning:"نُذِلّ ونخضع تعبداً وطاعةً"},
+    {root:"نَسْتَعِين",meaning:"نطلب العون والمساعدة"},{root:"اهْدِنَا",meaning:"أرشدنا وبيّن لنا الطريق"},
+    {root:"صِرَاط",meaning:"الطريق الواضح الواسع"},{root:"مُسْتَقِيم",meaning:"المعتدل الذي لا عِوَج فيه"},
+    {root:"نُور",meaning:"الضياء الذي يُزيل الظلام"},{root:"حَمْد",meaning:"الثناء الجميل على المُنعِم"},
+    {root:"مَلِك",meaning:"صاحب السلطة والملك"},{root:"قُلْ",meaning:"أمر بالقول والإعلان"},
+    {root:"هُوَ",meaning:"ضمير الغائب المفرد المذكر"},{root:"أَحَد",meaning:"الواحد الفرد لا شريك له"},
+    {root:"صَمَد",meaning:"الذي يُصمَد إليه في الحاجات"},{root:"كُفُوًا",meaning:"المِثل والنظير والمكافئ"},
+    {root:"فَلَق",meaning:"الصبح وانشقاق الفجر"},{root:"وَسْوَاس",meaning:"إلقاء الشيطان في القلب"},
+    {root:"نَاس",meaning:"بنو آدم / البشر جميعاً"},{root:"إِنسَان",meaning:"الكائن البشري المكلَّف"},
+    {root:"عَلَق",meaning:"الدم الجامد المتعلق بالرحم"},{root:"قَلَم",meaning:"أداة الكتابة"},
+    {root:"عِلْم",meaning:"إدراك الشيء على حقيقته"},{root:"عَدْل",meaning:"الإنصاف ووضع الأمور مواضعها"},
+    {root:"رَحْمَة",meaning:"الشفقة المؤدية للإحسان"},{root:"صَبْر",meaning:"حبس النفس عن الجزع"},
+    {root:"شُكْر",meaning:"الاعتراف بالنعمة والثناء"},{root:"تَوْبَة",meaning:"الرجوع إلى الله والندم"},
+    {root:"إِيمَان",meaning:"التصديق والإقرار والعمل"},{root:"إِسْلَام",meaning:"الاستسلام لله والانقياد"},
+    {root:"صَلَاة",meaning:"العبادة ذات الأركان والشروط"},{root:"زَكَاة",meaning:"حق واجب في المال للمستحقين"},
+    {root:"صِيَام",meaning:"الإمساك من الفجر للغروب"},{root:"حَجّ",meaning:"قصد البيت الحرام للمناسك"},
+    {root:"جَنَّة",meaning:"دار النعيم للمؤمنين"},{root:"نَار",meaning:"دار العذاب للكافرين"},
+    {root:"مَلَك",meaning:"كائن نوراني مأمور من الله"},{root:"نَبِيّ",meaning:"مَن أوحى إليه الله بشريعة"},
+    {root:"أُمَّة",meaning:"الجماعة المتحدة في الدين"},{root:"آيَة",meaning:"جملة من القرآن / علامة"},
+    {root:"سُورَة",meaning:"طائفة من الآيات لها مطلع"},{root:"حَقّ",meaning:"الصحيح الثابت بلا شك"},
+    {root:"خَيْر",meaning:"ما يُرغب فيه ويُحمد"},{root:"تَقْوَى",meaning:"اتقاء عذاب الله بطاعته"}
+  ],
+  es: [
+    {root:"بِسْمِ",meaning:"En el nombre de"},{root:"اللَّه",meaning:"Allah (Dios)"},
+    {root:"الرَّحْمَن",meaning:"El Compasivo"},{root:"الرَّحِيم",meaning:"El Misericordioso"},
+    {root:"رَبّ",meaning:"Señor / Sustentador"},{root:"عَالَمِين",meaning:"Los mundos / Toda la creación"},
+    {root:"يَوْم",meaning:"Día"},{root:"دِين",meaning:"Religión / Juicio"},
+    {root:"إِيَّاك",meaning:"Solo a Ti"},{root:"نَعْبُد",meaning:"Adoramos"},
+    {root:"نَسْتَعِين",meaning:"Imploramos ayuda"},{root:"اهْدِنَا",meaning:"Guíanos"},
+    {root:"صِرَاط",meaning:"Camino / Senda"},{root:"مُسْتَقِيم",meaning:"Recto / Derecho"},
+    {root:"نُور",meaning:"Luz"},{root:"حَمْد",meaning:"Alabanza / Gratitud"},
+    {root:"مَلِك",meaning:"Rey / Soberano"},{root:"قُلْ",meaning:"¡Di!"},
+    {root:"هُوَ",meaning:"Él"},{root:"أَحَد",meaning:"Uno / Único"},
+    {root:"صَمَد",meaning:"El Eterno / El Absoluto"},{root:"كُفُوًا",meaning:"Igual / Comparable"},
+    {root:"فَلَق",meaning:"El amanecer / El alba"},{root:"وَسْوَاس",meaning:"Susurro maligno"},
+    {root:"نَاس",meaning:"La gente / La humanidad"},{root:"إِنسَان",meaning:"Ser humano"},
+    {root:"عَلَق",meaning:"Embrión / Coágulo"},{root:"قَلَم",meaning:"Pluma / Cálamo"},
+    {root:"عِلْم",meaning:"Conocimiento / Ciencia"},{root:"عَدْل",meaning:"Justicia / Equidad"},
+    {root:"رَحْمَة",meaning:"Misericordia / Compasión"},{root:"صَبْر",meaning:"Paciencia"},
+    {root:"شُكْر",meaning:"Gratitud"},{root:"تَوْبَة",meaning:"Arrepentimiento"},
+    {root:"إِيمَان",meaning:"Fe / Creencia"},{root:"إِسْلَام",meaning:"Sumisión a Dios / Islam"},
+    {root:"صَلَاة",meaning:"Oración ritual"},{root:"زَكَاة",meaning:"Limosna obligatoria"},
+    {root:"صِيَام",meaning:"Ayuno"},{root:"حَجّ",meaning:"Peregrinación a La Meca"},
+    {root:"جَنَّة",meaning:"Paraíso / Jardín"},{root:"نَار",meaning:"Fuego / Infierno"},
+    {root:"مَلَك",meaning:"Ángel"},{root:"نَبِيّ",meaning:"Profeta"},
+    {root:"أُمَّة",meaning:"Comunidad / Nación"},{root:"آيَة",meaning:"Versículo / Signo"},
+    {root:"سُورَة",meaning:"Capítulo del Corán"},{root:"حَقّ",meaning:"Verdad / Derecho"},
+    {root:"خَيْر",meaning:"Bien / Bondad"},{root:"تَقْوَى",meaning:"Piedad / Conciencia de Dios"}
+  ],
+  de: [
+    {root:"بِسْمِ",meaning:"Im Namen von"},{root:"اللَّه",meaning:"Allah (Gott)"},
+    {root:"الرَّحْمَن",meaning:"Der Allerbarmer"},{root:"الرَّحِيم",meaning:"Der Barmherzige"},
+    {root:"رَبّ",meaning:"Herr / Erhalter"},{root:"عَالَمِين",meaning:"Die Welten / Die Schöpfung"},
+    {root:"يَوْم",meaning:"Tag"},{root:"دِين",meaning:"Religion / Gericht"},
+    {root:"إِيَّاك",meaning:"Nur Dir allein"},{root:"نَعْبُد",meaning:"Wir verehren"},
+    {root:"نَسْتَعِين",meaning:"Wir erbitten Hilfe"},{root:"اهْدِنَا",meaning:"Leite uns"},
+    {root:"صِرَاط",meaning:"Pfad / Weg"},{root:"مُسْتَقِيم",meaning:"Gerade / Aufrecht"},
+    {root:"نُور",meaning:"Licht"},{root:"حَمْد",meaning:"Lob / Dank"},
+    {root:"مَلِك",meaning:"König / Herrscher"},{root:"قُلْ",meaning:"Sprich!"},
+    {root:"هُوَ",meaning:"Er / Ihm"},{root:"أَحَد",meaning:"Einer / Einzigartiger"},
+    {root:"صَمَد",meaning:"Der Ewige / Der Absolute"},{root:"كُفُوًا",meaning:"Gleich / Vergleichbar"},
+    {root:"فَلَق",meaning:"Morgengrauen"},{root:"وَسْوَاس",meaning:"Böse Einflüsterung"},
+    {root:"نَاس",meaning:"Die Menschen"},{root:"إِنسَان",meaning:"Mensch"},
+    {root:"عَلَق",meaning:"Blutgerinnsel / Embryo"},{root:"قَلَم",meaning:"Feder"},
+    {root:"عِلْم",meaning:"Wissen / Wissenschaft"},{root:"عَدْل",meaning:"Gerechtigkeit"},
+    {root:"رَحْمَة",meaning:"Barmherzigkeit"},{root:"صَبْر",meaning:"Geduld / Ausdauer"},
+    {root:"شُكْر",meaning:"Dankbarkeit"},{root:"تَوْبَة",meaning:"Reue / Umkehr zu Gott"},
+    {root:"إِيمَان",meaning:"Glaube / Überzeugung"},{root:"إِسْلَام",meaning:"Hingabe an Gott / Islam"},
+    {root:"صَلَاة",meaning:"Ritualgebet"},{root:"زَكَاة",meaning:"Pflichtalmosen"},
+    {root:"صِيَام",meaning:"Fasten"},{root:"حَجّ",meaning:"Pilgerfahrt nach Mekka"},
+    {root:"جَنَّة",meaning:"Paradies / Garten"},{root:"نَار",meaning:"Feuer / Hölle"},
+    {root:"مَلَك",meaning:"Engel"},{root:"نَبِيّ",meaning:"Prophet"},
+    {root:"أُمَّة",meaning:"Gemeinschaft / Volk"},{root:"آيَة",meaning:"Vers / Zeichen"},
+    {root:"سُورَة",meaning:"Kapitel des Korans"},{root:"حَقّ",meaning:"Wahrheit / Recht"},
+    {root:"خَيْر",meaning:"Gut / Güte"},{root:"تَقْوَى",meaning:"Gottesfurcht / Frömmigkeit"}
+  ]
+};
+
+// ══════════════════════════════════════════
+//  ÉTAT
+// ══════════════════════════════════════════
+let cards = [], currentIndex = 0, revealed = false;
+let learnedCount = 0, currentLanguage = '';
+let learnedCards = new Set();
+let mediaRecorder, audioChunks = [], recordedAudioURL;
+let buttonsVisible = true;
+let clockMode = false;
+let clockInterval = null;
+let prayerTimes = null;
+
+const cardWordEl = document.getElementById('card-word');
+const cardHintEl = document.getElementById('card-hint');
+const learnedEl  = document.getElementById('words-learned');
+const progressEl = document.getElementById('progress-info');
+const buttons    = document.querySelectorAll('.button-circle');
+
+// ── Positionnement circulaire ──
+const RADIUS_FRAC = 0.75; // fraction de la moitié du container
+function computeRadius() {
+  const w = document.getElementById('fc-container').offsetWidth;
+  return w * RADIUS_FRAC / 2;
+}
+
+function positionButtons() {
+  const R = computeRadius();
+  buttons.forEach((btn, i) => {
+    const angle = (i / buttons.length) * 2 * Math.PI - Math.PI / 2;
+    const x = Math.round(R * Math.cos(angle)) - btn.offsetWidth / 2;
+    const y = Math.round(R * Math.sin(angle)) - btn.offsetHeight / 2;
+    btn.dataset.tx = x;
+    btn.dataset.ty = y;
+    if (!btn.classList.contains('retracted')) {
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+    }
+  });
+}
+window.addEventListener('resize', positionButtons);
+
+function retractButtons() {
+  if (!buttonsVisible) return;
+  buttonsVisible = false;
+  buttons.forEach(b => b.classList.add('retracted'));
+  document.getElementById('ring-hint').classList.remove('hidden');
+}
+function expandButtons() {
+  if (buttonsVisible) return;
+  buttonsVisible = true;
+  buttons.forEach(btn => {
+    btn.classList.remove('retracted');
+    btn.style.transform = `translate(${btn.dataset.tx}px, ${btn.dataset.ty}px)`;
+  });
+  document.getElementById('ring-hint').classList.add('hidden');
+}
+
+// Clic sur le ring (zone annulaire)
+document.getElementById('fc-container').addEventListener('click', e => {
+  const card = document.getElementById('flashcard');
+  const rect  = card.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top  + rect.height / 2;
+  const dist = Math.sqrt((e.clientX-cx)**2 + (e.clientY-cy)**2);
+  const cardR = rect.width / 2;
+  if (dist > cardR) {
+    if (buttonsVisible) retractButtons(); else expandButtons();
+  }
+});
+
+// ══════════════════════════════════════════
+//  SWIPE TOUCH (gauche/droite pour naviguer)
+// ══════════════════════════════════════════
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, {passive: true});
+
+document.addEventListener('touchend', e => {
+  if (!cards.length || clockMode) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)*1.5) {
+    if (dx < 0) nextCard(); else prevCard();
+  }
+}, {passive: true});
+
+// ── Toast ──
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ══════════════════════════════════════════
+//  GITHUB
+// ══════════════════════════════════════════
+const GITHUB_REPO = 'https://raw.githubusercontent.com/foued987/flashcards_muslim';
+let GITHUB_BASE = '';
+const LANG_FILES = { fr:'wordsfr.json', en:'wordsen.json', ar:'wordsar.json', es:'wordses.json', de:'words_de.json' };
+
+async function detectBranch() {
+  for (const branch of ['main','master']) {
+    try {
+      const res = await fetch(`${GITHUB_REPO}/${branch}/wordsfr.json`, { cache:'no-store', mode:'cors' });
+      if (res.ok) { GITHUB_BASE = `${GITHUB_REPO}/${branch}/`; return true; }
+    } catch(_) {}
+  }
+  return false;
+}
+
+async function testGithub() {
+  const dot = document.getElementById('status-dot');
+  const lbl = document.getElementById('status-label');
+  dot.className = 'status-dot checking';
+  lbl.textContent = 'Recherche…';
+  try {
+    const t0 = Date.now();
+    if (!await detectBranch()) throw new Error('Introuvable');
+    const data = await (await fetch(GITHUB_BASE+'wordsfr.json',{cache:'no-store'})).json();
+    const branch = GITHUB_BASE.includes('/main/') ? 'main' : 'master';
+    dot.className = 'status-dot ok';
+    lbl.textContent = `GitHub ✓ "${branch}" · ${data.length} mots · ${Date.now()-t0}ms`;
+    toast(`☁️ Connecté — branche "${branch}"`);
+  } catch(e) {
+    dot.className = 'status-dot error';
+    lbl.textContent = `GitHub ✗ ${e.message}`;
+    toast(`❌ ${e.message}`);
+  }
+}
+
+async function loadLanguage() {
+  const lang = document.getElementById('language-select').value;
+  if (!lang) { resetApp(); return; }
+  currentLanguage = lang; currentIndex = 0; revealed = false;
+  learnedCount = 0; learnedCards.clear();
+  cardWordEl.style.cssText = 'font-family:Cinzel,serif;font-size:13px;color:#888';
+  cardWordEl.textContent = 'Chargement…'; cardHintEl.textContent = '';
+  disableButtons(true);
+  const ok = GITHUB_BASE ? true : await detectBranch();
+  if (ok) {
+    try {
+      const res = await fetch(GITHUB_BASE + LANG_FILES[lang]);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      cards = (await res.json()).sort(() => Math.random() - 0.5);
+      showCard(); disableButtons(false);
+      toast(`☁️ ${cards.length} mots chargés depuis GitHub`);
+      return;
+    } catch(e) { toast('⚠️ GitHub inaccessible — données locales'); }
+  }
+  cards = WORDS[lang] ? [...WORDS[lang]].sort(() => Math.random()-0.5) : [];
+  if (!cards.length) { toast('❌ Aucune donnée'); return; }
+  showCard(); disableButtons(false);
+  toast(`📦 ${cards.length} mots (local)`);
+}
+
+function resetApp() {
+  cards = []; currentIndex = 0; revealed = false;
+  learnedCount = 0; currentLanguage = ''; learnedCards.clear();
+  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:clamp(22px,6vw,30px);font-weight:700;color:#7b3f00;line-height:1.2';
+  cardWordEl.textContent = 'بِسْمِ';
+  cardHintEl.textContent = 'Choisir une langue';
+  disableButtons(true); updateProgress();
+}
+
+function disableButtons(state) {
+  buttons.forEach(b => { if (b.id !== 'clock-btn') b.disabled = state; });
+}
+function updateProgress() {
+  learnedEl.textContent = learnedCount;
+  progressEl.textContent = cards.length ? `${currentIndex+1} / ${cards.length}` : '—/—';
+}
+
+function showCard() {
+  if (!cards.length) return;
+  revealed = false;
+  document.getElementById('flashcard').classList.remove('revealed-top');
+  cardWordEl.style.cssText = 'font-family:Amiri,serif;font-size:clamp(22px,6vw,30px);font-weight:700;color:#7b3f00;line-height:1.2';
+  cardWordEl.textContent = cards[currentIndex].root || '?';
+  cardHintEl.textContent = '👆 Toucher pour révéler';
+  updateProgress();
+}
+
+function handleCardClick(e) {
+  if (!cards.length) return;
+  if (!revealed) {
+    revealed = true; retractButtons();
+    cardWordEl.style.cssText = 'font-family:Cinzel,serif;font-size:clamp(11px,3vw,13px);font-weight:600;color:#1a2a3a;line-height:1.4';
+    cardWordEl.textContent = cards[currentIndex].meaning || '—';
+    cardHintEl.textContent = '⬆ Appris  |  ⬇ Passer';
+    document.getElementById('flashcard').classList.add('revealed-top');
+    return;
+  }
+  const rect = e.currentTarget.getBoundingClientRect();
+  if ((e.clientY - rect.top) < rect.height / 2) {
+    if (!learnedCards.has(currentIndex)) {
+      learnedCards.add(currentIndex); learnedCount++; updateProgress(); toast('✅ Mot appris !');
+    } else { toast('Déjà marqué comme appris'); }
+  } else { toast('⏭ Mot passé'); }
+  nextCard();
+}
+
+function nextCard() {
+  if (!cards.length) return;
+  currentIndex++;
+  if (currentIndex >= cards.length) {
+    cards.sort(() => Math.random()-0.5); currentIndex = 0;
+    toast('🔀 Jeu mélangé, c\'est reparti !');
+  }
+  showCard();
+}
+function prevCard() {
+  if (cards.length) { currentIndex = (currentIndex-1+cards.length)%cards.length; showCard(); }
+}
+
+// ── Audio ──
+function playSound() { toast('🔊 Ajoutez vos fichiers audio dans audio/{lang}/'); }
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({audio:true})
+    .then(stream => {
+      mediaRecorder = new MediaRecorder(stream); audioChunks = [];
+      mediaRecorder.addEventListener('dataavailable', e => audioChunks.push(e.data));
+      mediaRecorder.start();
+      document.getElementById('record-btn').style.color = '#e74c3c';
+      toast('🎤 Enregistrement en cours…');
+    }).catch(() => toast('⚠️ Microphone inaccessible'));
+}
+function stopRecording() {
+  if (mediaRecorder?.state === 'recording') {
+    mediaRecorder.stop();
+    mediaRecorder.addEventListener('stop', () => {
+      recordedAudioURL = URL.createObjectURL(new Blob(audioChunks));
+      document.getElementById('record-btn').style.color = '';
+      toast('✓ Enregistrement sauvegardé');
+    });
+  }
+}
+function playRecording() {
+  if (recordedAudioURL) new Audio(recordedAudioURL).play();
+  else toast('⚠️ Enregistre un mot d\'abord !');
+}
+
+function markLearned() {
+  if (!cards.length) return;
+  if (!learnedCards.has(currentIndex)) {
+    learnedCards.add(currentIndex); learnedCount++; updateProgress(); toast('✅ Mot appris !');
+  } else { toast('Déjà marqué'); }
+  nextCard();
+}
+function markForReview() {
+  if (!cards.length) return;
+  if (learnedCards.has(currentIndex)) { learnedCards.delete(currentIndex); learnedCount--; updateProgress(); }
+  toast('🔄 Remis en révision'); nextCard();
+}
+
+// ══════════════════════════════════════════
+//  HORLOGE PRIÈRE
+// ══════════════════════════════════════════
+const PRAYER_COLORS = {
+  Fajr:    { color:'#4a90d9', label:'Fajr'    },
+  Sunrise: { color:'#f39c12', label:'Chourouk' },
+  Dhuhr:   { color:'#f1c40f', label:'Dhuhr'   },
+  Asr:     { color:'#e67e22', label:'Asr'      },
+  Maghrib: { color:'#e74c3c', label:'Maghrib'  },
+  Isha:    { color:'#9b59b6', label:'Isha'     },
+};
+
+function toggleClock() {
+  clockMode = !clockMode;
+  const flashcard = document.getElementById('flashcard');
+  const canvas    = document.getElementById('clock-canvas');
+  const bar       = document.getElementById('prayer-bar');
+  const btn       = document.getElementById('clock-btn');
+  const badge     = document.getElementById('words-learned');
+  const prog      = document.getElementById('progress-info');
+  if (clockMode) {
+    flashcard.style.display = 'none';
+    canvas.style.display    = 'block';
+    bar.style.display       = 'flex';
+    badge.style.display     = 'none';
+    prog.style.display      = 'none';
+    btn.classList.add('active'); btn.title = 'Retour aux flashcards'; btn.textContent = '📖';
+    drawClock(); clockInterval = setInterval(drawClock, 1000);
+    if (!prayerTimes) locatePrayer(); else buildPrayerBar();
+  } else {
+    flashcard.style.display = '';
+    canvas.style.display    = 'none';
+    bar.style.display       = 'none';
+    badge.style.display     = '';
+    prog.style.display      = '';
+    btn.classList.remove('active'); btn.title = 'Horaires de prière'; btn.textContent = '🕌';
+    clearInterval(clockInterval);
+  }
+}
+
+function locatePrayer() {
+  document.getElementById('prayer-location').textContent = '📍 Localisation…';
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => fetchPrayerTimes(pos.coords.latitude, pos.coords.longitude),
+      ()  => fetchPrayerTimes(48.8566, 2.3522, 'Paris, France')
+    );
+  } else { fetchPrayerTimes(48.8566, 2.3522, 'Paris, France'); }
+}
+
+async function fetchPrayerTimes(lat, lng, fallback) {
+  try {
+    const now = new Date();
+    const url = `https://api.aladhan.com/v1/timings/${now.getDate()}-${now.getMonth()+1}-${now.getFullYear()}?latitude=${lat}&longitude=${lng}&method=2`;
+    const json = await (await fetch(url)).json();
+    if (json.code !== 200) throw new Error();
+    prayerTimes = json.data.timings;
+    let city = fallback || `${lat.toFixed(2)}°N`;
+    if (!fallback) {
+      try {
+        const gj = await (await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)).json();
+        city = gj.address.city || gj.address.town || gj.address.village || city;
+        const country = gj.address.country || '';
+        city = country ? `${city}, ${country}` : city;
+      } catch(_) {}
+    }
+    document.getElementById('prayer-location').textContent = '📍 ' + city;
+    buildPrayerBar();
+  } catch(e) {
+    document.getElementById('prayer-location').textContent = '⚠️ Horaires indisponibles';
+  }
+}
+
+function timeToAngle(t) {
+  const [h, m] = t.split(':').map(Number);
+  return ((h % 12) * 60 + m) / 720 * 360;
+}
+
+function drawClock() {
+  const canvas = document.getElementById('clock-canvas');
+  if (!canvas || canvas.style.display === 'none') return;
+  // Taille physique = taille CSS via devicePixelRatio pour netteté sur Retina
+  const dpr = window.devicePixelRatio || 1;
+  const size = canvas.getBoundingClientRect().width || 200;
+  if (canvas.width !== size * dpr) {
+    canvas.width  = size * dpr;
+    canvas.height = size * dpr;
+  }
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = size, H = size;
+  const cx = W/2, cy = H/2, R = W/2 - 2;
+  ctx.clearRect(0, 0, W, H);
+
+  const gr = ctx.createRadialGradient(cx-20, cy-20, 5, cx, cy, R);
+  gr.addColorStop(0, '#f5f0e8'); gr.addColorStop(1, '#e8dfd0');
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2*Math.PI);
+  ctx.fillStyle = gr; ctx.fill();
+
+  if (prayerTimes) {
+    const arcs = [
+      {from:'Fajr',   to:'Sunrise', color:'rgba(74,144,217,0.18)'},
+      {from:'Sunrise',to:'Dhuhr',   color:'rgba(241,196,15,0.12)'},
+      {from:'Dhuhr',  to:'Asr',     color:'rgba(241,196,15,0.16)'},
+      {from:'Asr',    to:'Maghrib', color:'rgba(230,126,34,0.20)'},
+      {from:'Maghrib',to:'Isha',    color:'rgba(155,89,182,0.18)'},
+    ];
+    arcs.forEach(a => {
+      if (!prayerTimes[a.from] || !prayerTimes[a.to]) return;
+      const t1 = (timeToAngle(prayerTimes[a.from]) - 90) * Math.PI/180;
+      const t2 = (timeToAngle(prayerTimes[a.to])   - 90) * Math.PI/180;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R-2, t1, t2);
+      ctx.closePath(); ctx.fillStyle = a.color; ctx.fill();
+    });
+  }
+
+  for (let i = 0; i < 60; i++) {
+    const a = (i/60)*2*Math.PI - Math.PI/2;
+    const major = i%5 === 0;
+    const r1 = R - (major ? 11 : 6), r2 = R - 1;
+    ctx.beginPath();
+    ctx.moveTo(cx+r1*Math.cos(a), cy+r1*Math.sin(a));
+    ctx.lineTo(cx+r2*Math.cos(a), cy+r2*Math.sin(a));
+    ctx.strokeStyle = major ? 'rgba(123,63,0,0.55)' : 'rgba(123,63,0,0.2)';
+    ctx.lineWidth = major ? 1.5 : 0.7; ctx.stroke();
+  }
+
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(123,63,0,0.75)';
+  for (let h = 1; h <= 12; h++) {
+    const a = (h/12)*2*Math.PI - Math.PI/2;
+    const r = R - 21;
+    ctx.font = h===12||h===3||h===6||h===9 ? `bold ${size*0.05}px Cinzel,serif` : `${size*0.045}px Cinzel,serif`;
+    ctx.fillText(h, cx+r*Math.cos(a), cy+r*Math.sin(a));
+  }
+
+  if (prayerTimes) {
+    Object.entries(PRAYER_COLORS).forEach(([key, cfg]) => {
+      const t = prayerTimes[key]; if (!t) return;
+      const a  = (timeToAngle(t) - 90) * Math.PI/180;
+      const rd = R - 35;
+      const x = cx+rd*Math.cos(a), y = cy+rd*Math.sin(a);
+      ctx.beginPath(); ctx.moveTo(cx, cy);
+      ctx.lineTo(cx+(R-13)*Math.cos(a), cy+(R-13)*Math.sin(a));
+      ctx.strokeStyle = cfg.color; ctx.lineWidth = 0.9;
+      ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, 2*Math.PI);
+      ctx.fillStyle = cfg.color; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1.2; ctx.stroke();
+      const rl = R - 55;
+      ctx.font = `${size*0.038}px Cinzel,serif`; ctx.fillStyle = cfg.color;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(cfg.label, cx+rl*Math.cos(a), cy+rl*Math.sin(a));
+    });
+  }
+
+  const now = new Date();
+  const sec = now.getSeconds(), min = now.getMinutes() + sec/60, hour = (now.getHours()%12) + min/60;
+  const drawHand = (deg, len, w, color) => {
+    const a = (deg-90)*Math.PI/180;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx+len*Math.cos(a), cy+len*Math.sin(a));
+    ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.stroke();
+  };
+  drawHand(hour/12*360, R*0.50, 4,   '#7b3f00');
+  drawHand(min/60*360,  R*0.67, 2.5, '#1a2a3a');
+  drawHand(sec/60*360,  R*0.73, 1.2, '#e74c3c');
+  ctx.beginPath(); ctx.arc(cx, cy, 4.5, 0, 2*Math.PI);
+  ctx.fillStyle = '#7b3f00'; ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+  updateCountdown();
+}
+
+function buildPrayerBar() {
+  const pills = document.getElementById('prayer-pills');
+  pills.innerHTML = '';
+  Object.entries(PRAYER_COLORS).forEach(([key, cfg]) => {
+    const t = prayerTimes[key]; if (!t) return;
+    const pill = document.createElement('div');
+    pill.className = 'prayer-pill'; pill.id = 'pp-'+key;
+    pill.innerHTML = `<div class="ppip" style="background:${cfg.color}"></div>
+      <span>${cfg.label}</span>
+      <strong style="margin-left:4px">${t.substring(0,5)}</strong>`;
+    pills.appendChild(pill);
+  });
+  updateCountdown();
+}
+
+function updateCountdown() {
+  if (!prayerTimes) return;
+  const now = new Date(), nowMin = now.getHours()*60 + now.getMinutes();
+  let nextKey = null, minDiff = Infinity;
+  Object.entries(PRAYER_COLORS).forEach(([key]) => {
+    const t = prayerTimes[key]; if (!t) return;
+    const [h,m] = t.split(':').map(Number), diff = (h*60+m) - nowMin;
+    if (diff > 0 && diff < minDiff) { minDiff = diff; nextKey = key; }
+  });
+  document.querySelectorAll('.prayer-pill').forEach(el => el.classList.remove('next-p'));
+  const cd = document.getElementById('prayer-countdown');
+  if (nextKey) {
+    const el = document.getElementById('pp-'+nextKey);
+    if (el) el.classList.add('next-p');
+    const h = Math.floor(minDiff/60), m = minDiff%60;
+    if (cd) cd.textContent = h>0 ? `Prochaine dans ${h}h${m.toString().padStart(2,'0')}` : `Prochaine dans ${m} min`;
+  }
+}
+
+// ── Clavier (desktop) ──
+document.addEventListener('keydown', e => {
+  if (clockMode) return;
+  if (!cards.length) return;
+  if (e.key === 'ArrowLeft') prevCard();
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextCard(); }
+  if (e.key === 'Enter') {
+    if (!revealed) handleCardClick({
+      currentTarget: document.getElementById('flashcard'),
+      clientY: 0,
+      getBoundingClientRect: () => ({top:0, height:200})
+    });
+    else nextCard();
+  }
+});
+
+// ── Init ──
+resetApp();
+window.addEventListener('load', () => {
+  positionButtons();
+  setTimeout(testGithub, 800);
+});
+</script>
+</body>
+</html>
